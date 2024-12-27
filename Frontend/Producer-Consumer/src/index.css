@@ -66,3 +66,21 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+.flow{
+  width: 80vw;
+  height: 80vh;
+ 
+}
+div.machine{
+  width: 3em;
+  height: 3em;
+  background-color: gray;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  font-family:'Courier New', Courier, monospace
+}
+
