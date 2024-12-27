@@ -98,7 +98,7 @@ const SimulationFlow = () => {
         console.log(edges)
         const queue = {id : `Q${QueueID}` , position :canvasPosition, data : {label: `Q${QueueID}`, count: 0 },type:"queue"}
         setFloatingNode(queue)
-        setQueueId(QueueID)
+        setQueueId(QueueID+1)
     
     };
     return (
