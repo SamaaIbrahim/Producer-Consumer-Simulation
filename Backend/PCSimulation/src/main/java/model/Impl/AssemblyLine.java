@@ -29,6 +29,5 @@ public class AssemblyLine implements Subject { // Queue
 
     @Override
     public void notifyAllObservers() {
-
     }
 }

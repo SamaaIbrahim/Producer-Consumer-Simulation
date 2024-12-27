@@ -2,6 +2,7 @@ package model.memento;
 
 import org.springframework.stereotype.Component;
 
+import java.util.EmptyStackException;
 import java.util.Stack;
 
 @Component
@@ -16,7 +17,7 @@ public class CareTaker {
         mementos.push(memento);
     }
 
-    public Memento getMemento() {
+    public Memento getMemento() throws EmptyStackException {
         return mementos.pop();
     }
 }
