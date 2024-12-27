@@ -20,6 +20,7 @@
   flex-direction: column;  /* Stacking buttons vertically */
   gap: 15px;           /* Increased space between buttons */
   justify-content: center; /* Center buttons vertically */
+  z-index: 2;
 }
 
 /* Styling for buttons inside the bar */

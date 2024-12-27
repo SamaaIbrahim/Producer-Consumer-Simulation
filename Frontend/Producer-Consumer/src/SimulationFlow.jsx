@@ -1,11 +1,11 @@
-import React, { useState ,useEffect} from "react";
+import React, { useState} from "react";
 import './App.css'; 
 import ReactFlow, {
     addEdge,
     useEdgesState,
     useNodesState,
     Background,
-    Controls,useReactFlow, ReactFlowProvider
+    Controls
 } from "reactflow";
 import "reactflow/dist/style.css";
 import MachineNode from "./MachineNode";
@@ -31,9 +31,6 @@ const SimulationFlow = () => {
     const [numberOfProducts, setNumberOfProducts] = useState(0);  // Correct state name
     const [redo, setRedo] = useState(false);  // Use a boolean for redo state
 
-
-
-
     const handleNumberOfProductsChange = (e) => {
         setNumberOfProducts(e.target.value);
     };
@@ -58,54 +55,28 @@ const SimulationFlow = () => {
         // Add the edge if validation passes
         setEdges((eds) => addEdge(params, eds));
     };
-    // State for floating node
-    const [floatingNode, setFloatingNode] = useState(null);
-    const { screenToFlowPosition } = useReactFlow();
-
-    // Mouse move handler
-    const handleMouseMove = (event) => {
-        if (floatingNode) {
-            const canvasPosition = screenToFlowPosition({ x: event.clientX, y: event.clientY });
-            setFloatingNode({
-                ...floatingNode,
-                position: canvasPosition,
-            });
-        }
-    };
-    
-
-    // Mouse click handler
-    const handleMouseClick = () => {
-        if (floatingNode) {
-            setNodes((nodes) => [...nodes, floatingNode]);
-            setFloatingNode(null);
-        }
-    };
 
     // creating machine node
-    const handleCreateMachine = (event) => {
-        const canvasPosition = screenToFlowPosition({ x: event.clientX, y: event.clientY })
-        console.log(canvasPosition)
-        let machine = {id : `M${machineID}` , position : canvasPosition , data : {label: `M${machineID}`, background:"grey"},type:"machine"}
-        setFloatingNode(machine)
+    const handleCreateMachine = () => {
+        const x = Math.random()*(100-300) + 100
+        const y = Math.random()*(100-300) + 100
+        const canvasPosition = {x : x , y: y}
+        const machine = {id : `M${machineID}` , position : canvasPosition, data : {label: `M${machineID}`, background:"grey"},type:"machine"}
+        setNodes([...nodes,machine])
         setMachineId(machineID+1)
-    
     };
     // creating queue node
     const handleCreateQueue = (event) => {
-        const canvasPosition = screenToFlowPosition({ x: event.clientX, y: event.clientY })
-        console.log(canvasPosition)
-        console.log(edges)
+        const x = Math.random()*(100-300) + 100
+        const y = Math.random()*(100-300) + 100
+        const canvasPosition = {x : x , y: y}
         const queue = {id : `Q${QueueID}` , position :canvasPosition, data : {label: `Q${QueueID}`, count: 0 },type:"queue"}
-        setFloatingNode(queue)
-        setQueueId(QueueID)
+        setNodes([...nodes,queue])
+        setQueueId(QueueID+1)
     
     };
     return (
-        <div className="flow"  
-        onMouseMove={handleMouseMove}
-        onClick={handleMouseClick}
-        >
+        <div className="flow">
              <div className='bar'>
                 <button className='icon' onClick={(event) => handleCreateMachine(event)}>
                     <img src={machineicon} alt="machineicon" />
@@ -145,7 +116,7 @@ const SimulationFlow = () => {
                 </button>
             </div>
             <ReactFlow
-                nodes={floatingNode ? [...nodes, floatingNode] : nodes}
+                nodes={nodes}
                 edges={edges}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
@@ -161,11 +132,5 @@ const SimulationFlow = () => {
     );
 };
 
-const WrappedSimulationFlow = () => (
-    <ReactFlowProvider>
-        <SimulationFlow />
-    </ReactFlowProvider>
-);
 
-export default WrappedSimulationFlow;
-
+export default SimulationFlow;

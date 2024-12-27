@@ -67,20 +67,36 @@ button:focus-visible {
   }
 }
 .flow{
-  width: 80vw;
-  height: 80vh;
+  width: 95vw;
+  height: 95vh;
+
  
 }
-div.machine{
-  width: 3em;
-  height: 3em;
-  background-color: gray;
+div.machine {
+  width: 2rem;
+  height: 2rem;
+  background-color: rgb(180, 169, 169);
+  border: 1px solid rgb(131, 209, 234); 
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
   color: white;
-  font-weight: bold;
-  font-family:'Courier New', Courier, monospace
+  font-size: 0.5em;
 }
+
+div.queue {
+  width: 2rem;
+  height: 2rem;
+  background-color: gray;
+  border: 1px solid rgb(131, 209, 234);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 0.5em;
+}
+
+
+
 
