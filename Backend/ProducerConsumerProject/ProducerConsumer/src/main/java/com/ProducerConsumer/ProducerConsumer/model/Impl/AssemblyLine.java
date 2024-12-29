@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
+import java.util.List;
+import java.util.PrimitiveIterator;
 import java.util.concurrent.BlockingDeque;
 
 @Data
@@ -17,18 +19,34 @@ import java.util.concurrent.BlockingDeque;
 public class AssemblyLine implements Subject { // Queue
     String id;
     BlockingDeque<Product> queue;
+    List<Observer> observers;
 
     @Override
     public void addObserver(Observer observer) {
-
+        observers.add(observer);
     }
 
     @Override
     public void removeObserver(Observer observer) {
-
+        observers.remove(observer);
     }
+
+    public void addProduct(Product product) throws InterruptedException {
+        queue.put(product);
+        notifyAllObservers();
+    }
+
+    public Product getProduct() throws InterruptedException {
+        return queue.take();
+    }
+
 
     @Override
     public void notifyAllObservers() {
+        synchronized (observers) {
+            for (Observer observer : observers) {
+                observer.update(this);
+            }
+        }
     }
 }
