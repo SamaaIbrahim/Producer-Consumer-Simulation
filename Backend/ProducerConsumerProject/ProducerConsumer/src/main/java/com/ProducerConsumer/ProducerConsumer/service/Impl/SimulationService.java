@@ -7,6 +7,7 @@ import com.ProducerConsumer.ProducerConsumer.model.Impl.Product;
 import com.ProducerConsumer.ProducerConsumer.model.memento.SimulationOriginator;
 import com.ProducerConsumer.ProducerConsumer.service.ISimulationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 
@@ -16,13 +17,16 @@ import java.util.stream.Collectors;
 
 @Service
 public class SimulationService implements ISimulationService {
+    SimpMessagingTemplate messagingTemplate;
+
     SimulationOriginator simulationOriginator;
     RandomGenerator randomGenerator;
 
     @Autowired
-    public SimulationService(SimulationOriginator simulationOriginator, RandomGenerator randomGenerator) {
+    public SimulationService(SimulationOriginator simulationOriginator, RandomGenerator randomGenerator, SimpMessagingTemplate messagingTemplate) {
         this.simulationOriginator = simulationOriginator;
         this.randomGenerator = randomGenerator;
+        this.messagingTemplate=messagingTemplate;
     }
 
     @Override
