@@ -53,6 +53,7 @@ public class SimulationService implements ISimulationService {
             products.add(new Product(Integer.toString(i), randomGenerator.generateColor()));
         }
         simulationOriginator.setProducts(products);
-
+        simulationOriginator.simulate();
     }
+
 }

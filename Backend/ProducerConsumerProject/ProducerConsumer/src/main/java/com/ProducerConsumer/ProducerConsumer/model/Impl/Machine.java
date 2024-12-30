@@ -52,4 +52,7 @@ public class Machine implements Runnable, Observer {
             }
         }
     }
+    public void stop(){
+        Thread.currentThread().interrupt();
+    }
 }
