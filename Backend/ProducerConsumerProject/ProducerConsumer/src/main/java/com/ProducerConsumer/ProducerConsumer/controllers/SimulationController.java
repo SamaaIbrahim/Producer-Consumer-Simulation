@@ -20,5 +20,9 @@ public class SimulationController {
         simulationService.simulate(simulationDto);
     }
 
+    @PostMapping("/replay")
+    public void replay() {
+        simulationService.replay();
+    }
 }
 

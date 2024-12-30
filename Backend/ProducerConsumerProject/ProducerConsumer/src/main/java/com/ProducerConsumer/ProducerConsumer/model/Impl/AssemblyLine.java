@@ -45,16 +45,16 @@ public class AssemblyLine implements Subject, DealingWithWebSocketsItem { // Que
     }
 
     @Override
-    public void sendWebSocket() {
-
-    }
-
-    @Override
     public void notifyAllObservers() {
         synchronized (observers) {
             for (Observer observer : observers) {
                 observer.update(this);
             }
         }
+    }
+
+    @Override
+    public void sendWebSocket() {
+
     }
 }

@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -18,9 +17,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class MachineDto {
     private String id;
-    private long processTime;
-    private List<AssemblyLineDto> inQueues;
-    private AssemblyLineDto outQueue;
+    private List<String> inQueuesIds;
+    private String outQueueId;
 
     @Autowired
     @JsonIgnore
@@ -31,8 +29,6 @@ public class MachineDto {
         return Machine.builder()
                 .id(this.id)
                 .processTime(this.randomGenerator.generateProcessTime())
-                .inQueues(this.inQueues.stream().map(AssemblyLineDto::getAssemblyLine).collect(Collectors.toList()))
-                .outQueue(this.outQueue.getAssemblyLine())
                 .build();
     }
 }

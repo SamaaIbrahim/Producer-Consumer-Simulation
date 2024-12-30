@@ -22,10 +22,10 @@ public class RandomGenerator {
     }
 
     public long generateProcessTime() {
-        return 1000 + random.nextLong(9001);
+        return 5000 + random.nextLong(15001);
     }
 
     public long productRate() {
-        return 500 + + random.nextLong(30001);
+        return 5000 + + random.nextLong(10001);
     }
 }

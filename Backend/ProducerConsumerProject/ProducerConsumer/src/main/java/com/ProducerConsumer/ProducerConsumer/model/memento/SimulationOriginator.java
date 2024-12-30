@@ -15,9 +15,9 @@ import java.util.List;
 @Data
 @Component
 public class SimulationOriginator {
-    List<Machine> machines;
-    List<AssemblyLine> assemblyLines;
-    List<Product> products;
+    private List<Machine> machines;
+    private List<AssemblyLine> assemblyLines;
+    private List<Product> products;
 
     CareTaker careTaker;
     @Autowired
@@ -25,11 +25,11 @@ public class SimulationOriginator {
         this.careTaker = careTaker;
     }
 
-    void SaveToCareTaker() {
+    public void saveToCareTaker() {
         careTaker.addMemento(new Memento(this.products, this.assemblyLines, this.machines));
     }
 
-    void loadFromCareTaker() {
+    public void loadFromCareTaker() {
         try{
             Memento memento = careTaker.getMemento();
             this.machines = memento.getMachines();

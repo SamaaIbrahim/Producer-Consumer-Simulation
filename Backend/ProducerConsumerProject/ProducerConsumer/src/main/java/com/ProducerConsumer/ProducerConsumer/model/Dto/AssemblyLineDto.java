@@ -15,6 +15,8 @@ import java.util.concurrent.LinkedBlockingDeque;
 @AllArgsConstructor
 public class AssemblyLineDto {
     private String id;
+    private boolean isStart;
+    private boolean isEnd;
 
     @JsonIgnore
     public AssemblyLine getAssemblyLine() {

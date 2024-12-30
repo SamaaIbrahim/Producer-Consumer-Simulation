@@ -14,5 +14,5 @@ import java.util.List;
 public class SimulationDto {
     Long numberOfProducts;
     List<MachineDto> machineDtos;
-    List<AssemblyLineDto> assemblyLineDtos;
+    List<AssemblyLineDto> assemblyLineDtos; // queues
 }
