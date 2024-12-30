@@ -1,5 +1,6 @@
 package com.ProducerConsumer.ProducerConsumer.model.Impl;
 
+import com.ProducerConsumer.ProducerConsumer.model.DealingWithWebSocketsItem;
 import com.ProducerConsumer.ProducerConsumer.model.Observer;
 import com.ProducerConsumer.ProducerConsumer.model.Subject;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ import java.util.concurrent.BlockingDeque;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AssemblyLine implements Subject { // Queue
+public class AssemblyLine implements Subject, DealingWithWebSocketsItem { // Queue
     String id;
     BlockingDeque<Product> queue;
     List<Observer> observers;
@@ -33,13 +34,20 @@ public class AssemblyLine implements Subject { // Queue
 
     public void addProduct(Product product) throws InterruptedException {
         queue.put(product);
+        sendWebSocket();
+
         notifyAllObservers();
     }
 
     public Product getProduct() throws InterruptedException {
+        sendWebSocket();
         return queue.take();
     }
 
+    @Override
+    public void sendWebSocket() {
+
+    }
 
     @Override
     public void notifyAllObservers() {
