@@ -39,4 +39,18 @@ public class SimulationOriginator {
             System.out.println(e.getMessage());
         }
     }
+    public void simulate(){
+        for(Machine machine : machines){
+            Thread thread =new Thread(machine);
+            thread.start();
+        }
+
+    }
+    public void stopSimulate(){
+        for(Machine machine : machines){
+            machine.stop();
+        }
+
+    }
+
 }

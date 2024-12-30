@@ -1,6 +1,5 @@
 package com.ProducerConsumer.ProducerConsumer.model.Impl;
 
-import com.ProducerConsumer.ProducerConsumer.model.DealingWithWebSocketsItem;
 import com.ProducerConsumer.ProducerConsumer.model.Observer;
 import com.ProducerConsumer.ProducerConsumer.model.Subject;
 import lombok.AllArgsConstructor;
@@ -15,7 +14,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Machine implements Runnable, Observer, DealingWithWebSocketsItem {
+public class Machine implements Runnable, Observer {
     private String id;
     private long processTime;
     private boolean isProcessing;
@@ -32,7 +31,6 @@ public class Machine implements Runnable, Observer, DealingWithWebSocketsItem {
     public void update(Subject subject) {
         try {
             this.product = ((AssemblyLine) subject).getProduct();
-            // notify front
             Thread.sleep(processTime);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -40,15 +38,12 @@ public class Machine implements Runnable, Observer, DealingWithWebSocketsItem {
         }
     }
 
-
-
     @Override
     public void run() {
         while (true) {
             try {
                 if(product != null) {
                     outQueue.addProduct(this.product);
-                    // notify front
                     this.product = null;
                 }
             } catch (InterruptedException e) {
@@ -56,10 +51,5 @@ public class Machine implements Runnable, Observer, DealingWithWebSocketsItem {
                 throw new RuntimeException(e);
             }
         }
-    }
-
-    @Override
-    public void sendWebSocket() {
-
     }
 }
