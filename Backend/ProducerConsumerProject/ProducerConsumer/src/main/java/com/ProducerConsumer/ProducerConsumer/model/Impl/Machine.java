@@ -1,5 +1,6 @@
 package com.ProducerConsumer.ProducerConsumer.model.Impl;
 
+import com.ProducerConsumer.ProducerConsumer.model.DealingWithWebSocketsItem;
 import com.ProducerConsumer.ProducerConsumer.model.Observer;
 import com.ProducerConsumer.ProducerConsumer.model.Subject;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Machine implements Runnable, Observer {
+public class Machine implements Runnable, Observer, DealingWithWebSocketsItem {
     private String id;
     private long processTime;
     private boolean isProcessing;
@@ -51,5 +52,14 @@ public class Machine implements Runnable, Observer {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public void stop() {
+        Thread.currentThread().interrupt();
+    }
+
+    @Override
+    public void sendWebSocket() {
+
     }
 }
