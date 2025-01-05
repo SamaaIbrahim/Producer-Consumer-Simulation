@@ -151,20 +151,32 @@ public class SimulationService implements ISimulationService {
             products.add(new Product(Integer.toString(i), randomGenerator.generateColor()));
         }
 
-        long rate = randomGenerator.productRate();
-        System.out.println("Product input Rate: " + rate);
-        for (Product product : products) {
+
+        for(Product product : products) {
             try {
                 startAssemblyLine.addProduct(product);
-                System.out.println("input product added");
-                System.out.println("start queue size : " + startAssemblyLine.getQueue().size());
-                System.out.println(rate);
-                Thread.sleep(rate); // Simulate rate of product generation
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt(); // Restore interrupt status
-                throw new RuntimeException("Thread interrupted during product generation.", e);
+                throw new RuntimeException(e);
             }
+
         }
+
+
+
+//        long rate = randomGenerator.productRate();
+//        System.out.println("Product input Rate: " + rate);
+//        for (Product product : products) {
+//            try {
+//                startAssemblyLine.addProduct(product);
+//                System.out.println("input product added");
+//                System.out.println("start queue size : " + startAssemblyLine.getQueue().size());
+//                System.out.println(rate);
+//                Thread.sleep(rate); // Simulate rate of product generation
+//            } catch (InterruptedException e) {
+//                Thread.currentThread().interrupt(); // Restore interrupt status
+//                throw new RuntimeException("Thread interrupted during product generation.", e);
+//            }
+//        }
 
         simulationOriginator.setProducts(products);
         simulationOriginator.saveToCareTaker();

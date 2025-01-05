@@ -67,7 +67,9 @@ public class Machine implements Runnable, Observer{
 
 
             Thread.sleep(processTime);
+
             this.isProcessing = false;
+            this.product = null;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
