@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.Objects;
 
 @Data
 @Builder
@@ -20,14 +22,15 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class Machine implements Runnable, Observer{
     private volatile boolean isRunning = true;
+    private Map<String, Boolean> queueHasProduct;
     private String id;
     private long processTime;
-    private boolean isProcessing;
     private List<AssemblyLine> inQueues;
     private AssemblyLine outQueue;
     private Product product;
     private SimpMessagingTemplate messagingTemplate;
    private SocketDto socketDto;
+   final Object obj = new Object();
     @Autowired
     public Machine(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
@@ -38,9 +41,9 @@ public class Machine implements Runnable, Observer{
         return "Machine{" +
                 "id='" + id + '\'' +
                 ", processTime=" + processTime +
-                ", inQueues=" + inQueues.stream().map(AssemblyLine::getId).toList() +
+                ", inQueues=" + (inQueues!= null? inQueues.stream().map(AssemblyLine::getId).toList() : null)  +
                 ", outQueue=" + outQueue.getId() +
-                ", color= " + (isProcessing ? product.getColor() : "not processing") +
+                ", color= " + (product != null ? product.getColor() : "grey") +
 //                ", messagingTemplate=" + messagingTemplate +
                 '}';
     }
@@ -48,65 +51,68 @@ public class Machine implements Runnable, Observer{
     @Override
     public void addSubject(Subject subject) {
         inQueues.add((AssemblyLine) subject);
+        this.isRunning = true;
+        if(queueHasProduct == null){queueHasProduct = new HashMap<>();}
+        queueHasProduct.put(((AssemblyLine) subject).getId(), false);
     }
 
     @Override
-    public void update(Subject subject) {
-        try {
-            this.product = ((AssemblyLine) subject).getProduct();
-            this.isProcessing = true;
-            this.socketDto = SocketDto.builder()
-                    .id(this.id)
-                    .color(product.getColor())
-                    .build();
-            System.out.println("_______________________________________________________________________________");
-            System.out.println("machine process start: " + this);
-            System.out.println("_______________________________________________________________________________");
-
-            messagingTemplate.convertAndSend("/Simulate/machine", socketDto);
-
-
-            Thread.sleep(processTime);
-
-            this.isProcessing = false;
-            outQueue.addProduct(product);
-
-            this.product = null;
-            socketDto.setColor(null);
-            messagingTemplate.convertAndSend("/Simulate/machine", socketDto);
-            System.out.println("Machine process completed: " + this);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        }
+    public void update(Subject subject, Boolean hasProduct) {
+            queueHasProduct.put(((AssemblyLine) subject).getId(), hasProduct);
     }
 
     @Override
     public void run() {
+        System.out.println("machine thread " + this.id + " is created");
         while (isRunning) {
-//            try {
+            try {
 //                synchronized (this) {
-//                    if (product != null) {
-//                        outQueue.addProduct(this.product);
-//                        this.product = null;
-//                        socketDto.setColor(null);
-//                        System.out.println("_______________________________________________________________________________");
-//                        System.out.println("machine process end: " + this);
-//                        System.out.println("_______________________________________________________________________________");
-//
-//                        messagingTemplate.convertAndSend("/Simulate/machine", socketDto);
-//                    }
+                    System.out.println("ahmed" + this.id);
+                    if(product == null) {
+                        for(AssemblyLine queue : inQueues){
+                            if(queueHasProduct.get(queue.getId())) {
+                                this.product = queue.getProduct();
+                                break;
+                            }
+                        }
+                        synchronized (obj){
+                            if(product != null) {
+                                this.socketDto = SocketDto.builder()
+                                        .id(this.id)
+                                        .color(product.getColor())
+                                        .build();
+                                System.out.println("_______________________________________________________________________________");
+                                System.out.println("machine process start: " + this);
+                                System.out.println("_______________________________________________________________________________");
+                                messagingTemplate.convertAndSend("/Simulate/machine", socketDto);
+
+                            }
+
+                        }
+
+
+                    }
+                    else {
+                        Thread.sleep(this.processTime);
+
+                        outQueue.addProduct(product);
+
+                        this.product = null;
+                        socketDto.setColor("808080");
+                        messagingTemplate.convertAndSend("/Simulate/machine", socketDto);
+                        System.out.println("Machine process completed: " + this);
+                    }
 //                }
-//
-//            } catch (InterruptedException e) {
-//                Thread.currentThread().interrupt();
-//                throw new RuntimeException(e);
-//            }
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            }
         }
     }
 
-    public void stop() {
-     this.isRunning=false;
+    public synchronized void stop() {
+        this.isRunning=false;
     }
 
 

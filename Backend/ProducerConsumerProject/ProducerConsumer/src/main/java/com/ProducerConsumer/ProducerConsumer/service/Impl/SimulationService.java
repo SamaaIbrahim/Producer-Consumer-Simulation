@@ -14,10 +14,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.stream.Collectors;
 
@@ -113,11 +111,9 @@ public class SimulationService implements ISimulationService {
             }
         }
 
-        System.out.println(assemblyLines.toString());
-        System.out.println(machines.toString());
 
-        simulationOriginator.setAssemblyLines(assemblyLines);
-        simulationOriginator.setMachines(machines);
+
+
 
         // Validate start and end assembly lines
         AssemblyLine startAssemblyLine = null;
@@ -145,50 +141,63 @@ public class SimulationService implements ISimulationService {
             throw new IllegalArgumentException("No ending queue specified.");
         }
 
-        // Generate and inject products into the start assembly line
         List<Product> products = new ArrayList<>();
         for (int i = 0; i < simulationDto.getNumberOfProducts(); i++) {
             products.add(new Product(Integer.toString(i), randomGenerator.generateColor()));
         }
+        System.out.println(Arrays.deepToString(products.toArray()));
 
-
-        for(Product product : products) {
-            try {
-                startAssemblyLine.addProduct(product);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
+        try {
+            startAssemblyLine.addProduct(products.toArray(new Product[0]));
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
+        System.out.println(assemblyLines.toString());
+        System.out.println(machines.toString());
 
+//        for(Product product : products) {
+//            try {
+//                startAssemblyLine.addProduct(product);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//
+//        }
+
+        simulationOriginator.setAssemblyLines(assemblyLines);
+        simulationOriginator.setMachines(machines);
+        simulationOriginator.setProducts(products);
+        simulationOriginator.saveToCareTaker();
 
 
 //        long rate = randomGenerator.productRate();
 //        System.out.println("Product input Rate: " + rate);
-//        for (Product product : products) {
-//            try {
-//                startAssemblyLine.addProduct(product);
-//                System.out.println("input product added");
-//                System.out.println("start queue size : " + startAssemblyLine.getQueue().size());
-//                System.out.println(rate);
-//                Thread.sleep(rate); // Simulate rate of product generation
-//            } catch (InterruptedException e) {
-//                Thread.currentThread().interrupt(); // Restore interrupt status
-//                throw new RuntimeException("Thread interrupted during product generation.", e);
+//        AssemblyLine finalStartAssemblyLine = startAssemblyLine;
+//        Thread puttingThread = new Thread(() -> {
+//            for (Product product : products) {
+//                try {
+//                    finalStartAssemblyLine.addProduct(product);
+//                    System.out.println("input product added");
+//                    System.out.println("start queue size : " + finalStartAssemblyLine.getQueue().size());
+//                    System.out.println(rate);
+//                    Thread.sleep(rate); // Simulate rate of product generation
+//                } catch (InterruptedException e) {
+//                    Thread.currentThread().interrupt(); // Restore interrupt status
+//                    throw new RuntimeException("Thread interrupted during product generation.", e);
+//                }
 //            }
-//        }
-
-        simulationOriginator.setProducts(products);
-        simulationOriginator.saveToCareTaker();
-        simulationOriginator.simulate(); // Trigger the simulation
+//        });
+//        puttingThread.start();
 
         AssemblyLine finalEndAssemblyLine = endAssemblyLine;
         Thread finishThread = new Thread(() -> {
             try {
                 while (true) {
                     synchronized (finalEndAssemblyLine) {
+                        System.out.println(" check");
                         if (finalEndAssemblyLine.getQueue().size() == products.size()) { // Compare sizes
                             simulationOriginator.stopSimulate();
+                            System.out.println("terminated");
                             break;
                         }
                     }
@@ -201,6 +210,9 @@ public class SimulationService implements ISimulationService {
         });
 
         finishThread.start();
+
+
+        simulationOriginator.simulate(); // Trigger the simulation
     }
 
     public void replay() {
