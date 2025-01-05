@@ -42,16 +42,18 @@ const SimulationFlow = () => {
         console.log("Connected to WebSocket");
         client.subscribe(`/Simulate/machine`, (message) => {
           const data = JSON.parse(message.body);
+          console.log(data)
           setNodes((prevNodes) =>
             prevNodes.map((node) =>
               node.id === data.id
-                ? { ...node, data: { ...node.data, color: data.color } }
+                ? { ...node, data: { ...node.data, background:"#"+ data.color } }
                 : node
             )
           );
         });
         client.subscribe(`/Simulate/queue`, (message) => {
           const data = JSON.parse(message.body);
+          console.log(data.size)
           setNodes((prevNodes) =>
             prevNodes.map((node) =>
               node.id === data.id
