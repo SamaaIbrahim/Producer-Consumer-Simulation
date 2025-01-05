@@ -16,11 +16,13 @@ import QueueNode from "./QueueNode";
 import queueicon from "./assets/queue.svg";
 import counter from "./assets/counter.svg";
 import redoicon from "./assets/redo.svg";
-import newsim from "./assets/startsim.svg";
+import newsim from "./assets/play.svg";
 import machineicon from "./assets/machine.svg";
-import deleteicon from "./assets/delete.svg";
+import deleteicon from "./assets/trash (1).svg";
 import HandleSimulate from "./HandleSimulate";
+import stopicon from './assets/stop.svg';
 import Replay from "./Replay";
+import Simulate from "./StopSimulate";
 const nodeTypes = { machine: MachineNode, queue: QueueNode };
 
 const SimulationFlow = () => {
@@ -32,8 +34,6 @@ const SimulationFlow = () => {
   const [queuemenu, setqueuemenu] = useState(false); // Initialize shape state inside the component
   const [menu, setMenu] = useState(false); // Initialize as boolean
   const [numberOfProducts, setNumberOfProducts] = useState(0); // Correct state name
-  const [redo, setRedo] = useState(false); // Use a boolean for redo state
-  const [queuetype, setqueuetype] = useState("");
 
   useEffect(() => {
     const client = new Client({
@@ -98,7 +98,12 @@ const SimulationFlow = () => {
       console.error("Source or target node not found.");
       return;
     }
-
+    const sourceedges = edges.filter((edge) => edge.source === source);
+  if(sourceNode.type==="machine"&& sourceedges.length===1 ){
+    alert(`Cannot connect a machine with two nodes`);
+    return; 
+ 
+  }
     // Check if source and target nodes are of the same type
     if (sourceNode.type === targetNode.type) {
       alert(`Cannot connect two nodes of the same type: ${sourceNode.type}`);
@@ -193,7 +198,7 @@ const SimulationFlow = () => {
       <div className="bar">
         <button
           className="icon"
-          onClick={(event) => handleCreateMachine(event)}
+          onClick={(event) => { setqueuemenu(false);setMenu(false);handleCreateMachine(event)}}
         >
           <img src={machineicon} alt="machineicon" />
         </button>
@@ -289,6 +294,9 @@ const SimulationFlow = () => {
           }}
         >
           <img src={redoicon} alt="redo" />
+        </button>
+        <button className="icon"onClick={Simulate}>
+        <img src={stopicon} alt="stop" />
         </button>
         <button className="icon" onClick={deleteall}>
           <img src={deleteicon} alt="delete" />
