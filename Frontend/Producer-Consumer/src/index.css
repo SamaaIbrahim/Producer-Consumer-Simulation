@@ -75,8 +75,8 @@ button:focus-visible {
 div.machine {
   width: 2rem;
   height: 2rem;
-  background-color: rgb(180, 169, 169);
-  border: 1px solid rgb(131, 209, 234); 
+  background-color: #808080;
+  border: 1px solid rgb(13, 13, 13); 
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -89,7 +89,8 @@ div.queue {
   width: 2rem;
   height: 2rem;
   background-color: gray;
-  border: 1px solid rgb(131, 209, 234);
+  border: 1px solid rgb(3, 3, 3);
+  border-radius: 15%;
   display: flex;
   justify-content: center;
   align-items: center;
