@@ -41,7 +41,7 @@ public class Machine implements Runnable, Observer{
                 ", inQueues=" + inQueues.stream().map(AssemblyLine::getId).toList() +
                 ", outQueue=" + outQueue.getId() +
                 ", color= " + (isProcessing ? product.getColor() : "not processing") +
-                ", messagingTemplate=" + messagingTemplate +
+//                ", messagingTemplate=" + messagingTemplate +
                 '}';
     }
 

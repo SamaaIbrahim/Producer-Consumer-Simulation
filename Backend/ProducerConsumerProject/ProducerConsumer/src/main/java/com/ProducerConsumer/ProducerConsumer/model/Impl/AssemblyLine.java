@@ -46,7 +46,7 @@ public class AssemblyLine implements Subject{
                 "id='" + id + '\'' +
                 ", size=" + queue.size() +
                 ", observers=" + (observers != null ? observers.stream().map(Observer::getId).toList(): null) +
-                ", messagingTemplate=" + messagingTemplate +
+//                ", messagingTemplate=" + messagingTemplate +
                 '}';
     }
 

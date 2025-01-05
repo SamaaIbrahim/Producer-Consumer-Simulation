@@ -155,9 +155,10 @@ public class SimulationService implements ISimulationService {
         System.out.println("Product input Rate: " + rate);
         for (Product product : products) {
             try {
+                startAssemblyLine.addProduct(product);
                 System.out.println("input product added");
                 System.out.println("start queue size : " + startAssemblyLine.getQueue().size());
-                startAssemblyLine.addProduct(product);
+                System.out.println(rate);
                 Thread.sleep(rate); // Simulate rate of product generation
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // Restore interrupt status
