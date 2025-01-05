@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +37,7 @@ public class SimulationService implements ISimulationService {
     }
 
     @Override
-    public void simulate(SimulationDto simulationDto) {
+    public void simulate(SimulationDto simulationDto) throws IllegalArgumentException{
 
         // Map machines and assembly lines for quick lookup
         List<Machine> machines = simulationDto
@@ -75,13 +76,34 @@ public class SimulationService implements ISimulationService {
             // Add inQueues
             for (String assemblyLineId : machineDto.getInQueuesIds()) {
                 if (assemblyLinesMap.containsKey(assemblyLineId)) {
+                    if(machine.getInQueues() == null) {
+                        machine.setInQueues(new ArrayList<>());
+                    }
+
                     AssemblyLine inQueue = assemblyLinesMap.get(assemblyLineId);
+                    if(inQueue.getObservers() == null)
+                    {
+                        inQueue.setObservers(new ArrayList<>());
+                    }
+                    if(inQueue.getQueue() == null) {
+                        inQueue.setQueue(new LinkedBlockingDeque<>());
+                    }
+                    if(inQueue.getMessagingTemplate() == null) {
+                        inQueue.setMessagingTemplate(this.messagingTemplate);
+                    }
+                    if(machine.getMessagingTemplate() == null) {
+                        machine.setMessagingTemplate(this.messagingTemplate);
+                    }
+                    inQueue.addObserver(machine);
                     machine.addSubject(inQueue);
                 } else {
                     throw new IllegalArgumentException("Assembly line with ID " + assemblyLineId + " not found for machine " + machineDto.getId());
                 }
             }
         }
+
+        System.out.println(assemblyLines.toString());
+        System.out.println(machines.toString());
 
         simulationOriginator.setAssemblyLines(assemblyLines);
         simulationOriginator.setMachines(machines);

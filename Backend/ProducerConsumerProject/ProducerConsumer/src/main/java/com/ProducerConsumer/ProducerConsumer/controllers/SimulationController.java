@@ -2,6 +2,7 @@ package com.ProducerConsumer.ProducerConsumer.controllers;
 
 import com.ProducerConsumer.ProducerConsumer.model.Dto.SimulationDto;
 import com.ProducerConsumer.ProducerConsumer.service.Impl.SimulationService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,13 +17,28 @@ public class SimulationController {
     }
 
     @PostMapping("/simulate")
-    public void simulate(@RequestBody SimulationDto simulationDto) {
-        simulationService.simulate(simulationDto);
+    public ResponseEntity<?> simulate(@RequestBody SimulationDto simulationDto) {
+
+        System.out.println("_____________________________________________________________________________");
+        System.out.println(simulationDto.toString());
+        System.out.println("_____________________________________________________________________________");
+
+        try {
+            simulationService.simulate(simulationDto);
+            return ResponseEntity.ok("Simulation started");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/replay")
-    public void replay() {
-        simulationService.replay();
+    public ResponseEntity<?> replay() {
+        try{
+            simulationService.replay();
+            return ResponseEntity.ok("Simulation replay started");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
 

@@ -12,6 +12,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -30,8 +31,19 @@ public class Machine implements Runnable, Observer{
     @Autowired
     public Machine(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
-
     }
+
+    @Override
+    public String toString() {
+        return "Machine{" +
+                "id='" + id + '\'' +
+                ", processTime=" + processTime +
+                ", inQueues=" + inQueues.stream().map(AssemblyLine::getId).toList() +
+                ", outQueue=" + outQueue.getId() +
+                ", messagingTemplate=" + messagingTemplate +
+                '}';
+    }
+
     @Override
     public void addSubject(Subject subject) {
         inQueues.add((AssemblyLine) subject);
@@ -45,7 +57,7 @@ public class Machine implements Runnable, Observer{
                     .id(this.id)
                     .color(product.getColor())
                     .build();
-            messagingTemplate.convertAndSend("/Simulate/machine", socketDto);
+            messagingTemplate.convertAndSend("/Simulate/machine/", socketDto);
 
 
             Thread.sleep(processTime);

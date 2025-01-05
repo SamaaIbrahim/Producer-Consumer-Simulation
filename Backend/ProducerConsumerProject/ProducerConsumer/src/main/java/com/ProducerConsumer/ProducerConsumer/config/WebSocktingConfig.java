@@ -15,7 +15,7 @@ public class WebSocktingConfig implements WebSocketMessageBrokerConfigurer {
         // Enable a simple in-memory message broker for topics
         config.enableSimpleBroker("/Simulate");
         // Prefix for messages bound for methods in @MessageMapping annotated controllers
-        //config.setApplicationDestinationPrefixes("/app");
+        config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override

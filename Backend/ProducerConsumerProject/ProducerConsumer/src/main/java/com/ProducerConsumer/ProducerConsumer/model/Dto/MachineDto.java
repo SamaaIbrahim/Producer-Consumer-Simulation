@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -20,9 +19,8 @@ public class MachineDto {
     private List<String> inQueuesIds;
     private String outQueueId;
 
-    @Autowired
     @JsonIgnore
-    private RandomGenerator randomGenerator;
+    private RandomGenerator randomGenerator = new RandomGenerator();
 
     @JsonIgnore
     public Machine getMachine() {

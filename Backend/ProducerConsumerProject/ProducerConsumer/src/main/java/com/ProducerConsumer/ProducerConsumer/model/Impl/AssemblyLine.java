@@ -13,9 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.PrimitiveIterator;
 import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 
 @Data
 @Builder
@@ -23,11 +25,11 @@ import java.util.concurrent.BlockingDeque;
 @AllArgsConstructor
 public class AssemblyLine implements Subject{
     // Queue
-    String id;
-    BlockingDeque<Product> queue;
-    List<Observer> observers;
-    SocketDto socketDto;
-    private  SimpMessagingTemplate messagingTemplate;
+    private String id;
+    private BlockingDeque<Product> queue = new LinkedBlockingDeque<>();
+    private List<Observer> observers = new ArrayList<>();
+    private SocketDto socketDto;
+    private SimpMessagingTemplate messagingTemplate;
     @Autowired
     public AssemblyLine(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
@@ -36,6 +38,16 @@ public class AssemblyLine implements Subject{
     @Override
     public void addObserver(Observer observer) {
         observers.add(observer);
+    }
+
+    @Override
+    public String toString() {
+        return "AssemblyLine{" +
+                "id='" + id + '\'' +
+                ", size=" + queue.size() +
+                ", observers=" + (observers != null ? observers.stream().map(Observer::getId).toList(): null) +
+                ", messagingTemplate=" + messagingTemplate +
+                '}';
     }
 
     @Override
@@ -49,13 +61,13 @@ public class AssemblyLine implements Subject{
                 .id(this.id)
                 .size(queue.size())
                 .build();
-        messagingTemplate.convertAndSend("/Simulate/queue"+socketDto);
+        messagingTemplate.convertAndSend("/Simulate/queue/"+socketDto);
         notifyAllObservers();
     }
 
     public Product getProduct() throws InterruptedException {
         socketDto.setSize(queue.size());
-        messagingTemplate.convertAndSend("/Simulate/queue"+socketDto);
+        messagingTemplate.convertAndSend("/Simulate/queue/"+ socketDto);
         return queue.take();
     }
 
