@@ -70,6 +70,16 @@ public class SimulationService implements ISimulationService {
             // Set outQueue
             if (assemblyLinesMap.containsKey(machineDto.getOutQueueId())) {
                 AssemblyLine outQueue = assemblyLinesMap.get(machineDto.getOutQueueId());
+                if(outQueue.getObservers() == null)
+                {
+                    outQueue.setObservers(new ArrayList<>());
+                }
+                if(outQueue.getQueue() == null) {
+                    outQueue.setQueue(new LinkedBlockingDeque<>());
+                }
+                if(outQueue.getMessagingTemplate() == null) {
+                    outQueue.setMessagingTemplate(this.messagingTemplate);
+                }
                 machine.setOutQueue(outQueue);
             }
 
@@ -94,6 +104,7 @@ public class SimulationService implements ISimulationService {
                     if(machine.getMessagingTemplate() == null) {
                         machine.setMessagingTemplate(this.messagingTemplate);
                     }
+
                     inQueue.addObserver(machine);
                     machine.addSubject(inQueue);
                 } else {
