@@ -65,7 +65,7 @@ public class AssemblyLine implements Subject{
         System.out.println("product in: " + this);
         System.out.println("_______________________________________________________________________________");
 
-//        messagingTemplate.convertAndSend("/Simulate/queue/"+socketDto);
+        messagingTemplate.convertAndSend("/Simulate/queue",socketDto);
         notifyAllObservers();
     }
 
@@ -75,7 +75,7 @@ public class AssemblyLine implements Subject{
         System.out.println("product out: " + this);
         System.out.println("_______________________________________________________________________________");
 
-//        messagingTemplate.convertAndSend("/Simulate/queue/"+ socketDto);
+        messagingTemplate.convertAndSend("/Simulate/queue",socketDto);
         return queue.take();
     }
 

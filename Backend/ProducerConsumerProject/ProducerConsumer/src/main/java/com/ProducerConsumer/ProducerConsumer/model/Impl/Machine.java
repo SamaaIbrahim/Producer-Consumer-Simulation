@@ -63,7 +63,7 @@ public class Machine implements Runnable, Observer{
             System.out.println("machine process start: " + this);
             System.out.println("_______________________________________________________________________________");
 
-//            messagingTemplate.convertAndSend("/Simulate/machine/", socketDto);
+            messagingTemplate.convertAndSend("/Simulate/machine", socketDto);
 
 
             Thread.sleep(processTime);
@@ -87,7 +87,7 @@ public class Machine implements Runnable, Observer{
                         System.out.println("machine process end: " + this);
                         System.out.println("_______________________________________________________________________________");
 
-//                        messagingTemplate.convertAndSend("/Simulate/machine", socketDto);
+                        messagingTemplate.convertAndSend("/Simulate/machine", socketDto);
                     }
                 }
 
