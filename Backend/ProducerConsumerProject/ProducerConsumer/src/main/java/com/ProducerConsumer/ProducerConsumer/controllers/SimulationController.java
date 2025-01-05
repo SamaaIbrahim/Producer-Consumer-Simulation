@@ -2,6 +2,8 @@ package com.ProducerConsumer.ProducerConsumer.controllers;
 
 import com.ProducerConsumer.ProducerConsumer.model.Dto.SimulationDto;
 import com.ProducerConsumer.ProducerConsumer.service.Impl.SimulationService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,13 +18,24 @@ public class SimulationController {
     }
 
     @PostMapping("/simulate")
-    public void simulate(@RequestBody SimulationDto simulationDto) {
-        simulationService.simulate(simulationDto);
+    public ResponseEntity<?> simulate(@RequestBody SimulationDto simulationDto) {
+        try {
+            simulationService.simulate(simulationDto);
+            return new  ResponseEntity<>(HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+
     }
 
     @PostMapping("/replay")
-    public void replay() {
-        simulationService.replay();
+    public ResponseEntity<?> replay() {
+        try {
+            simulationService.replay();
+            return new  ResponseEntity<>(HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 }
 
