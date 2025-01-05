@@ -69,7 +69,12 @@ public class Machine implements Runnable, Observer{
             Thread.sleep(processTime);
 
             this.isProcessing = false;
+            outQueue.addProduct(product);
+
             this.product = null;
+            socketDto.setColor(null);
+            messagingTemplate.convertAndSend("/Simulate/machine", socketDto);
+            System.out.println("Machine process completed: " + this);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
@@ -79,24 +84,24 @@ public class Machine implements Runnable, Observer{
     @Override
     public void run() {
         while (isRunning) {
-            try {
-                synchronized (this) {
-                    if (product != null) {
-                        outQueue.addProduct(this.product);
-                        this.product = null;
-                        socketDto.setColor(null);
-                        System.out.println("_______________________________________________________________________________");
-                        System.out.println("machine process end: " + this);
-                        System.out.println("_______________________________________________________________________________");
-
-                        messagingTemplate.convertAndSend("/Simulate/machine", socketDto);
-                    }
-                }
-
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
-            }
+//            try {
+//                synchronized (this) {
+//                    if (product != null) {
+//                        outQueue.addProduct(this.product);
+//                        this.product = null;
+//                        socketDto.setColor(null);
+//                        System.out.println("_______________________________________________________________________________");
+//                        System.out.println("machine process end: " + this);
+//                        System.out.println("_______________________________________________________________________________");
+//
+//                        messagingTemplate.convertAndSend("/Simulate/machine", socketDto);
+//                    }
+//                }
+//
+//            } catch (InterruptedException e) {
+//                Thread.currentThread().interrupt();
+//                throw new RuntimeException(e);
+//            }
         }
     }
 
