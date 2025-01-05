@@ -26,6 +26,6 @@ public class RandomGenerator {
     }
 
     public long productRate() {
-        return 5000 + + random.nextLong(10001);
+        return 50 + random.nextLong(1000);
     }
 }

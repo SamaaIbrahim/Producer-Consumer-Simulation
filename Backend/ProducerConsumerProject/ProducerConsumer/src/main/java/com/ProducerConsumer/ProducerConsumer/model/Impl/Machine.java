@@ -40,6 +40,7 @@ public class Machine implements Runnable, Observer{
                 ", processTime=" + processTime +
                 ", inQueues=" + inQueues.stream().map(AssemblyLine::getId).toList() +
                 ", outQueue=" + outQueue.getId() +
+                ", color= " + (isProcessing ? product.getColor() : "not processing") +
                 ", messagingTemplate=" + messagingTemplate +
                 '}';
     }
@@ -53,14 +54,20 @@ public class Machine implements Runnable, Observer{
     public void update(Subject subject) {
         try {
             this.product = ((AssemblyLine) subject).getProduct();
+            this.isProcessing = true;
             this.socketDto = SocketDto.builder()
                     .id(this.id)
                     .color(product.getColor())
                     .build();
-            messagingTemplate.convertAndSend("/Simulate/machine/", socketDto);
+            System.out.println("_______________________________________________________________________________");
+            System.out.println("machine process start: " + this);
+            System.out.println("_______________________________________________________________________________");
+
+//            messagingTemplate.convertAndSend("/Simulate/machine/", socketDto);
 
 
             Thread.sleep(processTime);
+            this.isProcessing = false;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
@@ -76,7 +83,11 @@ public class Machine implements Runnable, Observer{
                         outQueue.addProduct(this.product);
                         this.product = null;
                         socketDto.setColor(null);
-                        messagingTemplate.convertAndSend("/Simulate/machine", socketDto);
+                        System.out.println("_______________________________________________________________________________");
+                        System.out.println("machine process end: " + this);
+                        System.out.println("_______________________________________________________________________________");
+
+//                        messagingTemplate.convertAndSend("/Simulate/machine", socketDto);
                     }
                 }
 

@@ -61,13 +61,21 @@ public class AssemblyLine implements Subject{
                 .id(this.id)
                 .size(queue.size())
                 .build();
-        messagingTemplate.convertAndSend("/Simulate/queue/"+socketDto);
+        System.out.println("_______________________________________________________________________________");
+        System.out.println("product in: " + this);
+        System.out.println("_______________________________________________________________________________");
+
+//        messagingTemplate.convertAndSend("/Simulate/queue/"+socketDto);
         notifyAllObservers();
     }
 
     public Product getProduct() throws InterruptedException {
         socketDto.setSize(queue.size());
-        messagingTemplate.convertAndSend("/Simulate/queue/"+ socketDto);
+        System.out.println("_______________________________________________________________________________");
+        System.out.println("product out: " + this);
+        System.out.println("_______________________________________________________________________________");
+
+//        messagingTemplate.convertAndSend("/Simulate/queue/"+ socketDto);
         return queue.take();
     }
 

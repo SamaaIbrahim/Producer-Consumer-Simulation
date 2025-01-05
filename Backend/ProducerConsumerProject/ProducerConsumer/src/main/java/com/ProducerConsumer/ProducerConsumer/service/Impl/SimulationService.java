@@ -152,8 +152,11 @@ public class SimulationService implements ISimulationService {
         }
 
         long rate = randomGenerator.productRate();
+        System.out.println("Product input Rate: " + rate);
         for (Product product : products) {
             try {
+                System.out.println("input product added");
+                System.out.println("start queue size : " + startAssemblyLine.getQueue().size());
                 startAssemblyLine.addProduct(product);
                 Thread.sleep(rate); // Simulate rate of product generation
             } catch (InterruptedException e) {
