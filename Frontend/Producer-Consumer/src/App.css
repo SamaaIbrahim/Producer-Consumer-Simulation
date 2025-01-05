@@ -10,7 +10,7 @@
 .bar {
   position: absolute; /* Position it inside the container */
   width: 40px;         /* Increased width for easier access */
-  height: 250px;       /* Increased height for better button alignment */
+  height: 280px;       /* Increased height for better button alignment */
   top: 30%;            /* Position from the top */
   right: 2%;           /* Position on the right */
   background-color: rgba(28, 224, 175, 0.9); /* Slight transparency */
@@ -18,7 +18,7 @@
   border-radius: 12px;
   display: flex;       /* Vertical layout for buttons */
   flex-direction: column;  /* Stacking buttons vertically */
-  gap: 15px;           /* Increased space between buttons */
+  gap: 4%;           /* Increased space between buttons */
   justify-content: center; /* Center buttons vertically */
   z-index: 2;
 }
@@ -49,8 +49,8 @@ button.icon:active {
 }
 
 button.icon img {
-  width: 40px;           /* Adjust icon size inside the button */
-  height: 40px;
+  width: 30px;           /* Adjust icon size inside the button */
+  height: 30px;
   object-fit: cover;
 }
 .inputmenu{  
@@ -72,3 +72,34 @@ button.icon img {
   transition: 0.2s;
 }
 
+.menudisplay{
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  gap: 10px;
+  background-color: rgba(28, 224, 175, 0.9); /* Slight transparency */
+  border-color: rgb(45, 98, 91);
+  border-radius: 10px;
+  width: 150px;
+  height: 150px;
+  position: absolute;
+  top: 60px;
+  right: 90px;  /* Open the save menu on the left */
+  z-index: 2;
+  transition: 0.2s;
+}
+button.settype{
+  height: 40px;        /* Increased size for better interaction */
+  width: 80%; 
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color:white; /* Slight transparency */
+  border-color: rgb(45, 98, 91);
+  color: rgb(45, 98, 91);;
+  cursor: pointer;
+  outline: none;       /* Remove focus outline */
+}

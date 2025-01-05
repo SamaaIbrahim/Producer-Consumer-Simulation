@@ -13,9 +13,9 @@ import QueueNode from "./QueueNode";
 import queueicon from "./assets/queue.svg";
 import counter from "./assets/counter.svg";
 import redoicon from "./assets/redo.svg";
-import newicon from "./assets/newicon.svg";
-import machineicon from './assets/machine.svg';
-
+import newsim from "./assets/startsim.svg";
+import machineicon from "./assets/machine.svg";
+import deleteicon from "./assets/delete.svg";
 const nodeTypes = { machine: MachineNode, queue : QueueNode};
 
 const SimulationFlow = () => {
@@ -26,13 +26,44 @@ const SimulationFlow = () => {
     const [machineID, setMachineId] = useState(1);
     const [QueueID, setQueueId] = useState(1);
    
-    const [shape, setShape] = useState("");  // Initialize shape state inside the component
+    const [queuemenu, setqueuemenu] = useState(false);  // Initialize shape state inside the component
     const [menu, setMenu] = useState(false);  // Initialize as boolean
     const [numberOfProducts, setNumberOfProducts] = useState(0);  // Correct state name
     const [redo, setRedo] = useState(false);  // Use a boolean for redo state
+    const [queuetype,setqueuetype] =useState("")
 
-
-
+/*
+    useEffect(() => {
+        const socket = new SockJS("http://localhost:8080/ws"); // Replace with your backend WebSocket URL
+        const stompClient = Stomp.over(socket);
+    
+        stompClient.connect({}, () => {
+          // Subscribe to machine updates
+          stompClient.subscribe("/Simulate/machine", (message) => {
+            const data = JSON.parse(message.body);
+            setNodes((prevNodes) =>
+              prevNodes.map((node) =>
+                node.id === data.id ? { ...node, data: { ...node.data, color: data.color } } : node
+              )
+            );
+          });
+          stompClient.subscribe("/Simulate/queue", (message) => {
+            const data = JSON.parse(message.body);
+            setNodes((prevNodes) =>
+              prevNodes.map((node) =>
+                node.id === data.id ? { ...node, data: { ...node.data, count: data.size } } : node
+              )
+            );
+          });
+        });
+    
+        return () => stompClient.disconnect();
+      }, []);
+      */
+   const deleteall=() =>{
+     setNodes([]);
+     setEdges([]);
+   };
 
     const handleNumberOfProductsChange = (e) => {
         setNumberOfProducts(e.target.value);
@@ -87,6 +118,7 @@ const SimulationFlow = () => {
         const canvasPosition = screenToFlowPosition({ x: event.clientX, y: event.clientY })
         console.log(canvasPosition)
         let machine = {id : `M${machineID}` , position : canvasPosition , data : {label: `M${machineID}`, background:"grey"},type:"machine"}
+        console.log(machine)       
         setFloatingNode(machine)
         setMachineId(machineID+1)
     
@@ -96,7 +128,8 @@ const SimulationFlow = () => {
         const canvasPosition = screenToFlowPosition({ x: event.clientX, y: event.clientY })
         console.log(canvasPosition)
         console.log(edges)
-        const queue = {id : `Q${QueueID}` , position :canvasPosition, data : {label: `Q${QueueID}`, count: 0 },type:"queue"}
+        const queue = {id : `Q${QueueID}` , position :canvasPosition, data : {label: `Q${QueueID}`, count: 0},type:"queue",}
+        console.log(queue) 
         setFloatingNode(queue)
         setQueueId(QueueID+1)
     
@@ -110,10 +143,19 @@ const SimulationFlow = () => {
                 <button className='icon' onClick={(event) => handleCreateMachine(event)}>
                     <img src={machineicon} alt="machineicon" />
                 </button>
-                <button className="icon" onClick={(event) => handleCreateQueue(event)}>
+                
+                <button className="icon" onClick={()=>{setqueuemenu(!queuemenu);setMenu(false);}}>
                     <img src={queueicon} alt="queue" />  
-                </button>
-                <button className='icon' onClick={() => setMenu(!menu)}>
+                     </button>
+                    {queuemenu &&
+                <menu className="menudisplay">
+                <button className="settype"onClick={(event) => {setqueuemenu(false);  handleCreateQueue(event,"start");}}>Start</button>
+                <button className="settype"onClick={(event) => {setqueuemenu(false);  handleCreateQueue(event);}}>Normal</button>
+                <button className="settype"onClick={(event) => {setqueuemenu(false);  handleCreateQueue(event,"end");}}>End</button>
+                </menu>
+}
+               
+                <button className='icon' onClick={() => {setMenu(!menu);setqueuemenu(false);}}>
                     <img src={counter} alt="counter" />
                 </button>
                 {/* Conditional rendering of the menu */}
@@ -132,16 +174,20 @@ const SimulationFlow = () => {
                                 zIndex:"10px",
                                 padding: "10px",
                                 pointerEvents: "auto",
-                                color:"black"
+                                color:"black",
+                                border:"black"
                             }}
                         />
                     </div>
                 )}
-                <button className="icon" onClick={() => {setRedo(false);setMenu(false)}}>
-                    <img src={newicon} alt="new" />  
+                <button className="icon" onClick={() => {setRedo(false);setMenu(false);setqueuemenu(false);}}>
+                    <img src={newsim} alt="new" />  
                 </button>
-                <button  className="icon" onClick={() => {setRedo(true);setMenu(false)}}>
+                <button  className="icon" onClick={() => {setRedo(true);setMenu(false);setqueuemenu(false);}}>
                     <img src={redoicon} alt="redo" />  
+                </button>
+                <button  className="icon" onClick={ deleteall}>
+                    <img src={deleteicon} alt="delete" />  
                 </button>
             </div>
             <ReactFlow
