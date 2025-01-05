@@ -147,13 +147,12 @@ public class SimulationService implements ISimulationService {
         }
         System.out.println(Arrays.deepToString(products.toArray()));
 
-        try {
-            startAssemblyLine.addProduct(products.toArray(new Product[0]));
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println(assemblyLines.toString());
-        System.out.println(machines.toString());
+//        try {
+//            startAssemblyLine.addProduct(products.toArray(new Product[0]));
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+
 
 //        for(Product product : products) {
 //            try {
@@ -170,25 +169,27 @@ public class SimulationService implements ISimulationService {
         simulationOriginator.saveToCareTaker();
 
 
-//        long rate = randomGenerator.productRate();
-//        System.out.println("Product input Rate: " + rate);
-//        AssemblyLine finalStartAssemblyLine = startAssemblyLine;
-//        Thread puttingThread = new Thread(() -> {
-//            for (Product product : products) {
-//                try {
-//                    finalStartAssemblyLine.addProduct(product);
-//                    System.out.println("input product added");
-//                    System.out.println("start queue size : " + finalStartAssemblyLine.getQueue().size());
-//                    System.out.println(rate);
-//                    Thread.sleep(rate); // Simulate rate of product generation
-//                } catch (InterruptedException e) {
-//                    Thread.currentThread().interrupt(); // Restore interrupt status
-//                    throw new RuntimeException("Thread interrupted during product generation.", e);
-//                }
-//            }
-//        });
-//        puttingThread.start();
+        long rate = randomGenerator.productRate();
+        System.out.println("Product input Rate: " + rate);
+        AssemblyLine finalStartAssemblyLine = startAssemblyLine;
+        Thread puttingThread = new Thread(() -> {
+            for (Product product : products) {
+                try {
+                    finalStartAssemblyLine.addProduct(product);
+                    System.out.println("input product added");
+                    System.out.println("start queue size : " + finalStartAssemblyLine.getQueue().size());
+                    System.out.println(rate);
+                    Thread.sleep(rate); // Simulate rate of product generation
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // Restore interrupt status
+                    throw new RuntimeException("Thread interrupted during product generation.", e);
+                }
+            }
+        });
+        puttingThread.start();
 
+        System.out.println(assemblyLines.toString());
+        System.out.println(machines.toString());
         AssemblyLine finalEndAssemblyLine = endAssemblyLine;
         Thread finishThread = new Thread(() -> {
             try {

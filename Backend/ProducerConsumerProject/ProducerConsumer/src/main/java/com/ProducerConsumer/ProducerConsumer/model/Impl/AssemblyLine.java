@@ -80,7 +80,6 @@ public class AssemblyLine implements Subject {
 
             // Send queue state to subscribers (via WebSocket)
             messagingTemplate.convertAndSend("/Simulate/queue", socketDto);
-            Thread.sleep(100);
 
             // Notify all observers (observers should update their state)
         }

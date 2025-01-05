@@ -1,5 +1,6 @@
 package com.ProducerConsumer.ProducerConsumer.model.Impl;
 
+import ch.qos.logback.core.joran.conditional.ThenAction;
 import com.ProducerConsumer.ProducerConsumer.model.Dto.SocketDto;
 import com.ProducerConsumer.ProducerConsumer.model.Observer;
 import com.ProducerConsumer.ProducerConsumer.model.Subject;
@@ -21,7 +22,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Machine implements Runnable, Observer{
-    private volatile boolean isRunning = true;
+    private volatile boolean isRunning = false;
     private Map<String, Boolean> queueHasProduct;
     private String id;
     private long processTime;
@@ -58,7 +59,10 @@ public class Machine implements Runnable, Observer{
 
     @Override
     public void update(Subject subject, Boolean hasProduct) {
-            queueHasProduct.put(((AssemblyLine) subject).getId(), hasProduct);
+        queueHasProduct.put(((AssemblyLine) subject).getId(), hasProduct);
+//        if(hasProduct){
+//            isRunning = true;
+//        }
     }
 
     @Override
@@ -75,8 +79,18 @@ public class Machine implements Runnable, Observer{
                                 break;
                             }
                         }
+                        System.out.println("stop");
+//                        if(product == null) {
+//                            stop();
+//                            break;
+//                        }
                         synchronized (obj){
                             if(product != null) {
+
+                                // send Queue to Machine
+
+
+                                Thread.sleep(1000);
                                 this.socketDto = SocketDto.builder()
                                         .id(this.id)
                                         .color(product.getColor())
@@ -95,12 +109,16 @@ public class Machine implements Runnable, Observer{
                     else {
                         Thread.sleep(this.processTime);
 
-                        outQueue.addProduct(product);
-
-                        this.product = null;
                         socketDto.setColor("808080");
                         messagingTemplate.convertAndSend("/Simulate/machine", socketDto);
                         System.out.println("Machine process completed: " + this);
+                        Thread.sleep(1000);
+
+                        outQueue.addProduct(product);
+                        this.product = null;
+
+
+
                     }
 //                }
 
