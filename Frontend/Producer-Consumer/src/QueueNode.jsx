@@ -3,9 +3,9 @@ function QueueNode({data}) {
     return (
         <div className="queue">
         <p>{data.label}<br/>{data.count||0}</p>
-        <Handle type="target" position="left" id="left" style={{scale:"70%", background: "dodger-blue" }} />
-          <Handle type="source" position="right" id="right" style={{scale:"70%", background: "dodger-blue" }} />
-      </div>
+       {data.label!="StartQ"&& <Handle type="target" position="left" id="left" style={{scale:"70%", background: "dodger-blue" }} />}
+        {data.label!="EndQ"&&  <Handle type="source" position="right" id="right" style={{scale:"70%", background: "dodger-blue" }} />
+ } </div>
 
     );
 }
