@@ -1,12 +1,16 @@
 package com.ProducerConsumer.ProducerConsumer.model.Impl;
 
 import com.ProducerConsumer.ProducerConsumer.model.DealingWithWebSocketsItem;
+import com.ProducerConsumer.ProducerConsumer.model.Dto.SocketDto;
 import com.ProducerConsumer.ProducerConsumer.model.Observer;
 import com.ProducerConsumer.ProducerConsumer.model.Subject;
+import com.ProducerConsumer.ProducerConsumer.service.Impl.WebSocktingService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 
 import java.util.List;
@@ -17,10 +21,17 @@ import java.util.concurrent.BlockingDeque;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AssemblyLine implements Subject, DealingWithWebSocketsItem { // Queue
+public class AssemblyLine implements Subject{
+    // Queue
     String id;
     BlockingDeque<Product> queue;
     List<Observer> observers;
+    SocketDto socketDto;
+    private  SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    public AssemblyLine(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
 
     @Override
     public void addObserver(Observer observer) {
@@ -34,13 +45,17 @@ public class AssemblyLine implements Subject, DealingWithWebSocketsItem { // Que
 
     public void addProduct(Product product) throws InterruptedException {
         queue.put(product);
-        sendWebSocket();
-
+        socketDto=SocketDto.builder()
+                .id(this.id)
+                .size(queue.size())
+                .build();
+        messagingTemplate.convertAndSend("/Simulate/queue"+socketDto);
         notifyAllObservers();
     }
 
     public Product getProduct() throws InterruptedException {
-        sendWebSocket();
+        socketDto.setSize(queue.size());
+        messagingTemplate.convertAndSend("/Simulate/queue"+socketDto);
         return queue.take();
     }
 
@@ -53,8 +68,5 @@ public class AssemblyLine implements Subject, DealingWithWebSocketsItem { // Que
         }
     }
 
-    @Override
-    public void sendWebSocket() {
 
-    }
 }
