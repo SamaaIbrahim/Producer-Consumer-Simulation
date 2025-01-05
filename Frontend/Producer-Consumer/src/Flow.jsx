@@ -20,6 +20,7 @@ import newsim from "./assets/startsim.svg";
 import machineicon from "./assets/machine.svg";
 import deleteicon from "./assets/delete.svg";
 import HandleSimulate from "./HandleSimulate";
+import Replay from "./Replay";
 const nodeTypes = { machine: MachineNode, queue: QueueNode };
 
 const SimulationFlow = () => {
@@ -272,7 +273,6 @@ const SimulationFlow = () => {
         <button
           className="icon"
           onClick={() => {
-            setRedo(false);
             setMenu(false);
             setqueuemenu(false);
             HandleSimulate(nodes, edges, numberOfProducts);
@@ -283,9 +283,9 @@ const SimulationFlow = () => {
         <button
           className="icon"
           onClick={() => {
-            setRedo(true);
             setMenu(false);
             setqueuemenu(false);
+            Replay();
           }}
         >
           <img src={redoicon} alt="redo" />
