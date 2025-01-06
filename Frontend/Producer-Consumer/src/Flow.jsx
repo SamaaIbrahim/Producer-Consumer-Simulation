@@ -53,6 +53,37 @@ const SimulationFlow = () => {
             )
           );
         });
+        client.subscribe(`/Simulate/transfer`, (message) => {
+          const data = JSON.parse(message.body);
+          console.log(data);
+          setEdges((prevEdges) =>
+            prevEdges.map((edge) =>
+              edge.source === data.from && edge.target === data.to
+                ? {
+                    ...edge,
+                    markerEnd: { ...edge.markerEnd, color: "#" + data.color },
+                    style: { ...edge.style, stroke: "#" + data.color }
+                  }
+                : edge
+            )
+          );
+        
+          // Set timeout to reset color after 1 second
+          setTimeout(() => {
+            setEdges((prevEdges) =>
+              prevEdges.map((edge) =>
+                edge.source === data.from && edge.target === data.to
+                  ? {
+                      ...edge,
+                      markerEnd: { ...edge.markerEnd, color: "rgba(28, 224, 175, 0.9)" },
+                      style: { ...edge.style, stroke: "rgba(28, 224, 175, 0.9)" }
+                    }
+                  : edge
+              )
+            );
+          }, 1000); // 1000 ms = 1 second
+        });
+        
         client.subscribe(`/Simulate/queue`, (message) => {
           const data = JSON.parse(message.body);
           console.log(data)
@@ -85,7 +116,7 @@ const SimulationFlow = () => {
     setEdges([]);
     setMachineId(1);
     setQueueId(1); 
-    Simulate();
+    Simulate;
   };
 
   const handleNumberOfProductsChange = (e) => {
