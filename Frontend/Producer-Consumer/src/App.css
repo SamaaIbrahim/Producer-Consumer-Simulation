@@ -10,7 +10,7 @@
 .bar {
   position: absolute; /* Position it inside the container */
   width: 40px;         /* Increased width for easier access */
-  height: 280px;       /* Increased height for better button alignment */
+  height: 300px;       /* Increased height for better button alignment */
   top: 30%;            /* Position from the top */
   right: 2%;           /* Position on the right */
   background-color: rgba(28, 224, 175, 0.9); /* Slight transparency */
@@ -18,7 +18,7 @@
   border-radius: 12px;
   display: flex;       /* Vertical layout for buttons */
   flex-direction: column;  /* Stacking buttons vertically */
-  gap: 4%;           /* Increased space between buttons */
+  gap: 3%;           /* Increased space between buttons */
   justify-content: center; /* Center buttons vertically */
   z-index: 2;
 }
@@ -49,10 +49,23 @@ button.icon:active {
 }
 
 button.icon img {
-  width: 30px;           /* Adjust icon size inside the button */
-  height: 30px;
+  width: 28px;           /* Adjust icon size inside the button */
+  height: 28px;
   object-fit: cover;
 }
+@keyframes dash-move {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -20; /* Negative value makes it move forward */
+  }
+}
+
+.react-flow__edge {
+  animation: dash-move 5s linear infinite;
+}
+
 .inputmenu{  
   justify-content: center;
   align-items: center;

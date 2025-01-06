@@ -16,10 +16,14 @@ import QueueNode from "./QueueNode";
 import queueicon from "./assets/queue.svg";
 import counter from "./assets/counter.svg";
 import redoicon from "./assets/redo.svg";
-import newsim from "./assets/startsim.svg";
+import newsim from "./assets/play.svg";
 import machineicon from "./assets/machine.svg";
-import deleteicon from "./assets/delete.svg";
+import deleteicon from "./assets/trash (1).svg";
 import HandleSimulate from "./HandleSimulate";
+import stopicon from './assets/stop.svg';
+import Replay from "./Replay";
+import Simulate from "./StopSimulate";
+
 const nodeTypes = { machine: MachineNode, queue: QueueNode };
 
 const SimulationFlow = () => {
@@ -31,8 +35,6 @@ const SimulationFlow = () => {
   const [queuemenu, setqueuemenu] = useState(false); // Initialize shape state inside the component
   const [menu, setMenu] = useState(false); // Initialize as boolean
   const [numberOfProducts, setNumberOfProducts] = useState(0); // Correct state name
-  const [redo, setRedo] = useState(false); // Use a boolean for redo state
-  const [queuetype, setqueuetype] = useState("");
 
   useEffect(() => {
     const client = new Client({
@@ -53,7 +55,7 @@ const SimulationFlow = () => {
         });
         client.subscribe(`/Simulate/queue`, (message) => {
           const data = JSON.parse(message.body);
-          console.log(data.size)
+          console.log(data)
           setNodes((prevNodes) =>
             prevNodes.map((node) =>
               node.id === data.id
@@ -81,6 +83,9 @@ const SimulationFlow = () => {
   const deleteall = () => {
     setNodes([]);
     setEdges([]);
+    setMachineId(1);
+    setQueueId(1); 
+    Simulate();
   };
 
   const handleNumberOfProductsChange = (e) => {
@@ -97,15 +102,31 @@ const SimulationFlow = () => {
       console.error("Source or target node not found.");
       return;
     }
-
+    const sourceedges = edges.filter((edge) => edge.source === source);
+  if(sourceNode.type==="machine"&& sourceedges.length===1 ){
+    alert(`Cannot connect a machine with two nodes`);
+    return; 
+ 
+  }
     // Check if source and target nodes are of the same type
     if (sourceNode.type === targetNode.type) {
       alert(`Cannot connect two nodes of the same type: ${sourceNode.type}`);
       return; // Prevent the connection
     }
-
-    // Add the edge if validation passes
-    setEdges((eds) => addEdge(params, eds));
+  
+    const animatedEdge = {
+      ...params,
+      style: {
+        stroke: "rgba(28, 224, 175, 0.9)",
+        strokeWidth: 2,
+        strokeDasharray: "10 5", // Dashed pattern
+        strokeDashoffset: 0,    // Initial offset
+        animation: "dash-move 5s linear infinite", // Apply animation
+      },
+      markerEnd: { type: "arrowclosed", color: "rgba(28, 224, 175, 0.9)" },
+    };
+      setEdges((eds) => addEdge(animatedEdge, eds));
+    
   };
   // State for floating node
   const [floatingNode, setFloatingNode] = useState(null);
@@ -156,24 +177,39 @@ const SimulationFlow = () => {
       x: event.clientX,
       y: event.clientY,
     });
+    let queue = null;
     if (type === "start") {
-      const queue = {
+      queue = {
         id: `StartQ`,
         position: canvasPosition,
         data: { label: `StartQ`, count: 0 },
         type: "queue",
       };
-      setFloatingNode(queue);
+      const node = nodes.find((node)=> node.id === queue.id)
+      if(node){
+        alert(`Cannot have multible start`);
+        return
+      }
+      else{
+        setFloatingNode(queue)
+      }
     } else if (type === "end") {
-      const queue = {
+      queue = {
         id: `EndQ`,
         position: canvasPosition,
         data: { label: `EndQ`, count: 0 },
         type: "queue",
       };
-      setFloatingNode(queue);
+      const node = nodes.find((node)=> node.id === queue.id)
+      if(node){
+        alert(`Cannot have multible end`);
+        return
+      }
+      else{
+        setFloatingNode(queue)
+      }
     } else {
-      const queue = {
+       queue = {
         id: `Q${QueueID}`,
         position: canvasPosition,
         data: { label: `Q${QueueID}`, count: 0 },
@@ -182,6 +218,7 @@ const SimulationFlow = () => {
       setFloatingNode(queue);
       setQueueId(QueueID + 1);
     }
+    
   };
   return (
     <div
@@ -192,7 +229,7 @@ const SimulationFlow = () => {
       <div className="bar">
         <button
           className="icon"
-          onClick={(event) => handleCreateMachine(event)}
+          onClick={(event) => { setqueuemenu(false);setMenu(false);handleCreateMachine(event)}}
         >
           <img src={machineicon} alt="machineicon" />
         </button>
@@ -272,10 +309,9 @@ const SimulationFlow = () => {
         <button
           className="icon"
           onClick={() => {
-            setRedo(false);
             setMenu(false);
             setqueuemenu(false);
-            HandleSimulate(nodes, edges, numberOfProducts);
+            HandleSimulate(nodes, edges, numberOfProducts,setNodes);
           }}
         >
           <img src={newsim} alt="new" />
@@ -283,12 +319,15 @@ const SimulationFlow = () => {
         <button
           className="icon"
           onClick={() => {
-            setRedo(true);
             setMenu(false);
             setqueuemenu(false);
+            Replay(setNodes);
           }}
         >
           <img src={redoicon} alt="redo" />
+        </button>
+        <button className="icon"onClick={Simulate}>
+        <img src={stopicon} alt="stop" />
         </button>
         <button className="icon" onClick={deleteall}>
           <img src={deleteicon} alt="delete" />
