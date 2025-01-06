@@ -58,7 +58,7 @@ button.icon img {
     stroke-dashoffset: 0;
   }
   to {
-    stroke-dashoffset: -20; /* Negative value makes it move forward */
+    stroke-dashoffset: -100; /* Negative value makes it move forward */
   }
 }
 

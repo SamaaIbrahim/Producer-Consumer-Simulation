@@ -1,5 +1,6 @@
 package com.ProducerConsumer.ProducerConsumer.model.Impl;
 
+import com.ProducerConsumer.ProducerConsumer.model.Dto.TransferDto;
 import com.ProducerConsumer.ProducerConsumer.model.Observer;
 import com.ProducerConsumer.ProducerConsumer.model.Subject;
 import com.ProducerConsumer.ProducerConsumer.model.Dto.SocketDto;
@@ -86,6 +87,7 @@ public class AssemblyLine implements Subject, Cloneable {
         if(!id.equals( "StartQ")) {
             Thread.sleep(1500);
         }
+
 
         notifyAllObservers();
 

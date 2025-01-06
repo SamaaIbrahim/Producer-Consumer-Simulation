@@ -80,10 +80,12 @@ public class Machine implements Runnable, Observer, Cloneable{
                             if(queueHasProduct.get(queue.getId())) {
                                 if(!isRunning) break;
                                 this.product = queue.getProduct();
-                                Thread.sleep(1500);
                                 if(product != null) {
                                     transferDto = new TransferDto(queue.getId(),this.id, product.getColor());
                                 }
+                                messagingTemplate.convertAndSend("/Simulate/transfer", transferDto);
+                                Thread.sleep(1500);
+
                                 break;
                             }
                         }
@@ -96,7 +98,7 @@ public class Machine implements Runnable, Observer, Cloneable{
 
                                 if(!isRunning) break;
                                 // send Queue to Machine
-                                messagingTemplate.convertAndSend("/Simulate/transfer", transferDto);
+                            //    messagingTemplate.convertAndSend("/Simulate/transfer", transferDto);
 
                                 this.socketDto = SocketDto.builder()
                                         .id(this.id)
