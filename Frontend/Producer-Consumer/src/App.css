@@ -53,6 +53,19 @@ button.icon img {
   height: 28px;
   object-fit: cover;
 }
+@keyframes dash-move {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -20; /* Negative value makes it move forward */
+  }
+}
+
+.react-flow__edge {
+  animation: dash-move 5s linear infinite;
+}
+
 .inputmenu{  
   justify-content: center;
   align-items: center;

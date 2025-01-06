@@ -23,7 +23,9 @@ import HandleSimulate from "./HandleSimulate";
 import stopicon from './assets/stop.svg';
 import Replay from "./Replay";
 import Simulate from "./StopSimulate";
+
 const nodeTypes = { machine: MachineNode, queue: QueueNode };
+
 const SimulationFlow = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -53,7 +55,7 @@ const SimulationFlow = () => {
         });
         client.subscribe(`/Simulate/queue`, (message) => {
           const data = JSON.parse(message.body);
-          console.log(data)
+          console.log(data.size)
           setNodes((prevNodes) =>
             prevNodes.map((node) =>
               node.id === data.id
@@ -81,6 +83,8 @@ const SimulationFlow = () => {
   const deleteall = () => {
     setNodes([]);
     setEdges([]);
+    setMachineId(1);
+    setQueueId(1); 
   };
 
   const handleNumberOfProductsChange = (e) => {
@@ -108,9 +112,20 @@ const SimulationFlow = () => {
       alert(`Cannot connect two nodes of the same type: ${sourceNode.type}`);
       return; // Prevent the connection
     }
-
-    // Add the edge if validation passes
-    setEdges((eds) => addEdge(params, eds));
+  
+    const animatedEdge = {
+      ...params,
+      style: {
+        stroke: "rgba(28, 224, 175, 0.9)",
+        strokeWidth: 2,
+        strokeDasharray: "10 5", // Dashed pattern
+        strokeDashoffset: 0,    // Initial offset
+        animation: "dash-move 5s linear infinite", // Apply animation
+      },
+      markerEnd: { type: "arrowclosed", color: "rgba(28, 224, 175, 0.9)" },
+    };
+      setEdges((eds) => addEdge(animatedEdge, eds));
+    
   };
   // State for floating node
   const [floatingNode, setFloatingNode] = useState(null);
@@ -161,39 +176,24 @@ const SimulationFlow = () => {
       x: event.clientX,
       y: event.clientY,
     });
-    let queue = null;
     if (type === "start") {
-      queue = {
+      const queue = {
         id: `StartQ`,
         position: canvasPosition,
         data: { label: `StartQ`, count: 0 },
         type: "queue",
       };
-      const node = nodes.find((node)=> node.id === queue.id)
-      if(node){
-        alert(`Cannot have multible start`);
-        return
-      }
-      else{
-        setFloatingNode(queue)
-      }
+      setFloatingNode(queue);
     } else if (type === "end") {
-      queue = {
+      const queue = {
         id: `EndQ`,
         position: canvasPosition,
         data: { label: `EndQ`, count: 0 },
         type: "queue",
       };
-      const node = nodes.find((node)=> node.id === queue.id)
-      if(node){
-        alert(`Cannot have multible end`);
-        return
-      }
-      else{
-        setFloatingNode(queue)
-      }
+      setFloatingNode(queue);
     } else {
-       queue = {
+      const queue = {
         id: `Q${QueueID}`,
         position: canvasPosition,
         data: { label: `Q${QueueID}`, count: 0 },
@@ -202,7 +202,6 @@ const SimulationFlow = () => {
       setFloatingNode(queue);
       setQueueId(QueueID + 1);
     }
-    
   };
   return (
     <div
@@ -295,7 +294,7 @@ const SimulationFlow = () => {
           onClick={() => {
             setMenu(false);
             setqueuemenu(false);
-            HandleSimulate(nodes, edges, numberOfProducts,setNodes);
+            HandleSimulate(nodes, edges, numberOfProducts);
           }}
         >
           <img src={newsim} alt="new" />
@@ -305,7 +304,7 @@ const SimulationFlow = () => {
           onClick={() => {
             setMenu(false);
             setqueuemenu(false);
-            Replay(setNodes);
+            Replay();
           }}
         >
           <img src={redoicon} alt="redo" />
@@ -326,7 +325,7 @@ const SimulationFlow = () => {
         nodeTypes={nodeTypes}
         fitView
       >
-        <Background/>
+        <Background />
         <Controls />
       </ReactFlow>
     </div>
