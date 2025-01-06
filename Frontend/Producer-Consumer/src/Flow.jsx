@@ -55,7 +55,7 @@ const SimulationFlow = () => {
         });
         client.subscribe(`/Simulate/queue`, (message) => {
           const data = JSON.parse(message.body);
-          console.log(data.size)
+          console.log(data)
           setNodes((prevNodes) =>
             prevNodes.map((node) =>
               node.id === data.id
@@ -85,6 +85,7 @@ const SimulationFlow = () => {
     setEdges([]);
     setMachineId(1);
     setQueueId(1); 
+    Simulate();
   };
 
   const handleNumberOfProductsChange = (e) => {
@@ -176,24 +177,39 @@ const SimulationFlow = () => {
       x: event.clientX,
       y: event.clientY,
     });
+    let queue = null;
     if (type === "start") {
-      const queue = {
+      queue = {
         id: `StartQ`,
         position: canvasPosition,
         data: { label: `StartQ`, count: 0 },
         type: "queue",
       };
-      setFloatingNode(queue);
+      const node = nodes.find((node)=> node.id === queue.id)
+      if(node){
+        alert(`Cannot have multible start`);
+        return
+      }
+      else{
+        setFloatingNode(queue)
+      }
     } else if (type === "end") {
-      const queue = {
+      queue = {
         id: `EndQ`,
         position: canvasPosition,
         data: { label: `EndQ`, count: 0 },
         type: "queue",
       };
-      setFloatingNode(queue);
+      const node = nodes.find((node)=> node.id === queue.id)
+      if(node){
+        alert(`Cannot have multible end`);
+        return
+      }
+      else{
+        setFloatingNode(queue)
+      }
     } else {
-      const queue = {
+       queue = {
         id: `Q${QueueID}`,
         position: canvasPosition,
         data: { label: `Q${QueueID}`, count: 0 },
@@ -202,6 +218,7 @@ const SimulationFlow = () => {
       setFloatingNode(queue);
       setQueueId(QueueID + 1);
     }
+    
   };
   return (
     <div
@@ -294,7 +311,7 @@ const SimulationFlow = () => {
           onClick={() => {
             setMenu(false);
             setqueuemenu(false);
-            HandleSimulate(nodes, edges, numberOfProducts);
+            HandleSimulate(nodes, edges, numberOfProducts,setNodes);
           }}
         >
           <img src={newsim} alt="new" />
@@ -304,7 +321,7 @@ const SimulationFlow = () => {
           onClick={() => {
             setMenu(false);
             setqueuemenu(false);
-            Replay();
+            Replay(setNodes);
           }}
         >
           <img src={redoicon} alt="redo" />
