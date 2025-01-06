@@ -27,10 +27,13 @@ public class SimulationOriginator {
     }
 
     public void saveToCareTaker() {
-        List<AssemblyLine> newAssemblyLines = new ArrayList<>();
+        Map<String, AssemblyLine> newAssemblyLines = new HashMap<>();
         Map<String, Machine> newMachines = new HashMap<>();
         for(Machine machine: machines) {
             newMachines.put(machine.getId(), machine.clone());
+        }
+        for(AssemblyLine assemblyLine: assemblyLines) {
+            newAssemblyLines.put(assemblyLine.getId(), assemblyLine.clone());
         }
         for(AssemblyLine assemblyLine: assemblyLines){
             AssemblyLine newAssemblyLine = assemblyLine.clone();
@@ -39,9 +42,13 @@ public class SimulationOriginator {
                 newAssemblyLine.addObserver(machine);
                 machine.addSubject(newAssemblyLine);
             }
-            newAssemblyLines.add(newAssemblyLine);
+            newAssemblyLines.put(newAssemblyLine.getId(), newAssemblyLine);
         }
-        careTaker.addMemento(new Memento(this.products, newAssemblyLines, new ArrayList<>(newMachines.values()), rate));
+        for(Machine machine : machines){
+            Machine machine1 = newMachines.get(machine.getId());
+            machine1.setOutQueue(newAssemblyLines.get(machine.getOutQueue().getId()));
+        }
+        careTaker.addMemento(new Memento(this.products, new ArrayList<>(newAssemblyLines.values()), new ArrayList<>(newMachines.values()), rate));
 
 
     }
@@ -71,11 +78,11 @@ public class SimulationOriginator {
 
     }
     public void stopSimulate(){
-        for(Machine machine : machines){
-            machine.stop();
-
+        if(machines != null){
+            for(Machine machine : machines){
+                machine.stop();
+            }
         }
-
     }
 
 }

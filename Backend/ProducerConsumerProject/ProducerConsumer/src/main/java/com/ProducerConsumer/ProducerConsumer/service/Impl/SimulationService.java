@@ -150,11 +150,6 @@ public class SimulationService implements ISimulationService {
         simulationOriginator.setMachines(machines);
         simulationOriginator.setProducts(products);
         simulationOriginator.setRate(randomGenerator.productRate());
-        System.out.println("??????????????????????????????????????????????????????//");
-        System.out.println(machines);
-        System.out.println(assemblyLines);
-        System.out.println(products);
-        System.out.println("??????????????????????????????????????????????????????//");
 
         simulationOriginator.saveToCareTaker();
     }
@@ -165,13 +160,19 @@ public class SimulationService implements ISimulationService {
         for(AssemblyLine assemblyLine : simulationOriginator.getAssemblyLines()){
             if(assemblyLine.getId().equals("StartQ")) {
                 startAssemblyLine = assemblyLine;
-                System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaa");
                 System.out.println(assemblyLine);
             }
             else if(assemblyLine.getId().equals("EndQ")) {
                 endAssemblyLine = assemblyLine;
             }
         }
+
+        System.out.println("??????????????????????????????????????????????????????//");
+        System.out.println(simulationOriginator.getMachines());
+        System.out.println(simulationOriginator.getAssemblyLines());
+        System.out.println(simulationOriginator.getProducts());
+        System.out.println("??????????????????????????????????????????????????????//");
+
 
         simulationOriginator.simulate();
         long rate = simulationOriginator.getRate();
@@ -198,8 +199,7 @@ public class SimulationService implements ISimulationService {
         AssemblyLine finalEndAssemblyLine = endAssemblyLine;
         Thread finishThread = new Thread(() -> {
             try {
-                while (true) {
-                    if(stopped) break;
+                while (!stopped) {
                     synchronized (finalEndAssemblyLine) {
                         System.out.println(" check");
                         if (finalEndAssemblyLine.getQueue().size() == simulationOriginator.getProducts().size()) { // Compare sizes
@@ -221,6 +221,8 @@ public class SimulationService implements ISimulationService {
     }
     @Override
     public void simulate(SimulationDto simulationDto) throws IllegalArgumentException {
+        if(simulationDto.getNumberOfProducts() <= 0) return;
+        stop();
         generateSimulationGenerator(simulationDto);
         simulateThread();
     }
