@@ -26,6 +26,7 @@ public class SimulationController {
             simulationService.simulate(simulationDto);
             return new  ResponseEntity<>(HttpStatus.OK);
         }catch (IllegalArgumentException e){
+            System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
 
@@ -38,7 +39,16 @@ public class SimulationController {
             return ResponseEntity.ok("Simulation replay started");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
+    @PostMapping("/stop")
+    public ResponseEntity<?> stop() {
+        try{
+            simulationService.stop();
+            return ResponseEntity.ok("Simulation stopped");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

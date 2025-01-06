@@ -2,6 +2,7 @@ package com.ProducerConsumer.ProducerConsumer.model.Impl;
 
 import ch.qos.logback.core.joran.conditional.ThenAction;
 import com.ProducerConsumer.ProducerConsumer.model.Dto.SocketDto;
+import com.ProducerConsumer.ProducerConsumer.model.Dto.TransferDto;
 import com.ProducerConsumer.ProducerConsumer.model.Observer;
 import com.ProducerConsumer.ProducerConsumer.model.Subject;
 import lombok.AllArgsConstructor;
@@ -12,16 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Machine implements Runnable, Observer{
+public class Machine implements Runnable, Observer, Cloneable{
     private volatile boolean isRunning = false;
     private Map<String, Boolean> queueHasProduct;
     private String id;
@@ -31,6 +29,7 @@ public class Machine implements Runnable, Observer{
     private Product product;
     private SimpMessagingTemplate messagingTemplate;
    private SocketDto socketDto;
+    TransferDto transferDto;
    final Object obj = new Object();
     @Autowired
     public Machine(SimpMessagingTemplate messagingTemplate) {
@@ -71,15 +70,19 @@ public class Machine implements Runnable, Observer{
         while (isRunning) {
             try {
 //                synchronized (this) {
-                    System.out.println("ahmed" + this.id);
+
+//                System.out.println("ahmed" + this.id);
+//                System.out.println(inQueues);
                     if(product == null) {
                         for(AssemblyLine queue : inQueues){
                             if(queueHasProduct.get(queue.getId())) {
                                 this.product = queue.getProduct();
+                                if(product != null) {
+                                    transferDto = new TransferDto(queue.getId(),this.id, product.getColor());
+                                }
                                 break;
                             }
                         }
-                        System.out.println("stop");
 //                        if(product == null) {
 //                            stop();
 //                            break;
@@ -88,7 +91,7 @@ public class Machine implements Runnable, Observer{
                             if(product != null) {
 
                                 // send Queue to Machine
-
+                                messagingTemplate.convertAndSend("/Simulate/transfer", transferDto);
 
                                 Thread.sleep(1000);
                                 this.socketDto = SocketDto.builder()
@@ -112,6 +115,10 @@ public class Machine implements Runnable, Observer{
                         socketDto.setColor("808080");
                         messagingTemplate.convertAndSend("/Simulate/machine", socketDto);
                         System.out.println("Machine process completed: " + this);
+
+                        this.transferDto =  new TransferDto(this.id, outQueue.getId(), product.getColor());
+                        messagingTemplate.convertAndSend("/Simulate/transfer",transferDto);
+
                         Thread.sleep(1000);
 
                         outQueue.addProduct(product);
@@ -134,4 +141,17 @@ public class Machine implements Runnable, Observer{
     }
 
 
+    @Override
+    public Machine clone() {
+        try {
+            Machine clone = (Machine) super.clone();
+            clone.queueHasProduct = new HashMap<>(this.queueHasProduct); // Deep copy map
+            clone.inQueues = new ArrayList<>(this.inQueues); // Deep copy list
+            clone.outQueue = this.outQueue.clone(); // Assuming AssemblyLine implements clone
+            clone.socketDto = this.socketDto != null ? this.socketDto : null; // Assuming SocketDto implements clone
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
+    }
 }

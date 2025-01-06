@@ -17,4 +17,5 @@ public class Memento {
     List<Product> products;
     List<AssemblyLine> assemblyLines;
     List<Machine> machines;
+    long rate;
 }

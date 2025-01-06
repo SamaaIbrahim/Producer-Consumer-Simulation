@@ -19,7 +19,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AssemblyLine implements Subject {
+public class AssemblyLine implements Subject, Cloneable {
     // Queue
     private String id;
     private BlockingDeque<Product> queue = new LinkedBlockingDeque<>();
@@ -104,4 +104,17 @@ public class AssemblyLine implements Subject {
 
         return product;
     }
+
+    @Override
+    public AssemblyLine clone() {
+        AssemblyLine clone = new AssemblyLine();
+        clone.setId(id);
+        // Deep clone queue
+        clone.queue = new LinkedBlockingDeque<>();
+        clone.setMessagingTemplate(messagingTemplate);
+        // Deep clone observers if necessary
+
+        return clone;
+    }
+
 }

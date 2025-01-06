@@ -21,23 +21,27 @@ import java.util.stream.Collectors;
 
 @Service
 public class SimulationService implements ISimulationService {
-    SimpMessagingTemplate messagingTemplate;
-    SimulationOriginator simulationOriginator;
-    RandomGenerator randomGenerator;
-    CareTaker careTaker;
+    private final SimpMessagingTemplate messagingTemplate;
+    private final SimulationOriginator simulationOriginator;
+    private final RandomGenerator randomGenerator;
+
+    private AssemblyLine startAssemblyLine;
+    private AssemblyLine endAssemblyLine;
 
     @Autowired
-    public SimulationService(SimulationOriginator simulationOriginator, RandomGenerator randomGenerator, SimpMessagingTemplate messagingTemplate, CareTaker careTaker) {
+    SimulationService(SimulationOriginator simulationOriginator, RandomGenerator randomGenerator, SimpMessagingTemplate messagingTemplate, CareTaker careTaker) {
         this.simulationOriginator = simulationOriginator;
         this.randomGenerator = randomGenerator;
         this.messagingTemplate=messagingTemplate;
-        this.careTaker = careTaker;
     }
 
-    @Override
-    public void simulate(SimulationDto simulationDto) throws IllegalArgumentException{
-
-        // Map machines and assembly lines for quick lookup
+    private void generateSimulationGenerator(SimulationDto simulationDto){
+        simulationOriginator.setProducts(new ArrayList<>());
+        simulationOriginator.setMachines(new ArrayList<>());
+        simulationOriginator.setAssemblyLines(new ArrayList<>());
+        startAssemblyLine = null;
+        endAssemblyLine = null;
+        System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::");
         List<Machine> machines = simulationDto
                 .getMachineDtos()
                 .stream()
@@ -47,6 +51,7 @@ public class SimulationService implements ISimulationService {
         for (Machine machine : machines) {
             machinesMap.put(machine.getId(), machine);
         }
+
 
         List<AssemblyLine> assemblyLines = simulationDto
                 .getAssemblyLineDtos()
@@ -110,14 +115,9 @@ public class SimulationService implements ISimulationService {
                 }
             }
         }
+        System.out.println(":;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
 
 
-
-
-
-        // Validate start and end assembly lines
-        AssemblyLine startAssemblyLine = null;
-        AssemblyLine endAssemblyLine = null;
         for (AssemblyLineDto assemblyLineDto : simulationDto.getAssemblyLineDtos()) {
             if (assemblyLineDto.isStart()) {
                 if (startAssemblyLine != null) {
@@ -140,40 +140,45 @@ public class SimulationService implements ISimulationService {
         if (endAssemblyLine == null) {
             throw new IllegalArgumentException("No ending queue specified.");
         }
-
+        System.out.println(".....................................................");
         List<Product> products = new ArrayList<>();
         for (int i = 0; i < simulationDto.getNumberOfProducts(); i++) {
             products.add(new Product(Integer.toString(i), randomGenerator.generateColor()));
         }
         System.out.println(Arrays.deepToString(products.toArray()));
-
-//        try {
-//            startAssemblyLine.addProduct(products.toArray(new Product[0]));
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
-
-
-//        for(Product product : products) {
-//            try {
-//                startAssemblyLine.addProduct(product);
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
-//
-//        }
-
         simulationOriginator.setAssemblyLines(assemblyLines);
         simulationOriginator.setMachines(machines);
         simulationOriginator.setProducts(products);
+        simulationOriginator.setRate(randomGenerator.productRate());
+        System.out.println("??????????????????????????????????????????????????????//");
+        System.out.println(machines);
+        System.out.println(assemblyLines);
+        System.out.println(products);
+        System.out.println("??????????????????????????????????????????????????????//");
+
         simulationOriginator.saveToCareTaker();
+    }
 
+    public void simulateThread() throws IllegalArgumentException{
 
-        long rate = randomGenerator.productRate();
+//        simulationOriginator.stopSimulate();
+        for(AssemblyLine assemblyLine : simulationOriginator.getAssemblyLines()){
+            if(assemblyLine.getId().equals("StartQ")) {
+                startAssemblyLine = assemblyLine;
+                System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                System.out.println(assemblyLine);
+            }
+            else if(assemblyLine.getId().equals("EndQ")) {
+                endAssemblyLine = assemblyLine;
+            }
+        }
+        
+        simulationOriginator.simulate();
+        long rate = simulationOriginator.getRate();
         System.out.println("Product input Rate: " + rate);
         AssemblyLine finalStartAssemblyLine = startAssemblyLine;
         Thread puttingThread = new Thread(() -> {
-            for (Product product : products) {
+            for (Product product : simulationOriginator.getProducts()) {
                 try {
                     finalStartAssemblyLine.addProduct(product);
                     System.out.println("input product added");
@@ -188,15 +193,16 @@ public class SimulationService implements ISimulationService {
         });
         puttingThread.start();
 
-        System.out.println(assemblyLines.toString());
-        System.out.println(machines.toString());
+        System.out.println(simulationOriginator.getAssemblyLines().toString());
+        System.out.println(simulationOriginator.getMachines().toString());
         AssemblyLine finalEndAssemblyLine = endAssemblyLine;
         Thread finishThread = new Thread(() -> {
             try {
                 while (true) {
+                    if(stopped) break;
                     synchronized (finalEndAssemblyLine) {
                         System.out.println(" check");
-                        if (finalEndAssemblyLine.getQueue().size() == products.size()) { // Compare sizes
+                        if (finalEndAssemblyLine.getQueue().size() == simulationOriginator.getProducts().size()) { // Compare sizes
                             simulationOriginator.stopSimulate();
                             System.out.println("terminated");
                             break;
@@ -211,12 +217,25 @@ public class SimulationService implements ISimulationService {
         });
 
         finishThread.start();
-
-
-        simulationOriginator.simulate(); // Trigger the simulation
+         // Trigger the simulation
+    }
+    @Override
+    public void simulate(SimulationDto simulationDto) throws IllegalArgumentException {
+        generateSimulationGenerator(simulationDto);
+        simulateThread();
     }
 
+
+
     public void replay() {
+//        simulationOriginator.stopSimulate();
+        stop();
         simulationOriginator.loadFromCareTaker();
+        this.simulateThread();
+    }
+    boolean stopped = false;
+    public void stop() {
+        stopped = true;
+        simulationOriginator.stopSimulate();
     }
 }
