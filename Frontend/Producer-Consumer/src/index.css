@@ -5,7 +5,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: rgb(27, 27, 27) !important;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -96,6 +96,16 @@ div.queue {
   align-items: center;
   color: white;
   font-size: 0.5em;
+}
+.handle{
+  width : 4px !important; 
+  height: 4px !important;
+  min-width: 4px !important;
+  min-height: 4px !important;
+  border: 0.5px solid !important;
+
+  background-color: #545457 !important;
+  
 }
 
 

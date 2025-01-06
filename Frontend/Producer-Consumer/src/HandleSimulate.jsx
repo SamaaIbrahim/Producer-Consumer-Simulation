@@ -1,9 +1,7 @@
 import axios from "axios";
-async function HandleSimulate(nodes,edges,numberOfProducts){
+async function HandleSimulate(nodes,edges,numberOfProducts,setNodes){
     const machines = nodes.filter((node)=> node.type === "machine").map((machine)=> ({id : machine.id,inQueuesIds:[],outQueueId:""}))
     const queues = nodes.filter((node)=> node.type === "queue").map((queue)=>({id : queue.id , isStart:queue.id==="StartQ",isEnd:queue.id==="EndQ"}))
-
-
     edges.forEach((edge) => {
         const { source, target } = edge;
     
@@ -19,6 +17,20 @@ async function HandleSimulate(nodes,edges,numberOfProducts){
             }
         }
     });
+    setNodes((prevNodes) =>
+        prevNodes.map((node) => {
+          if (node.type === "machine") {
+            return { ...node,data:{...node.data,background:"#808080"} }; 
+          } else {
+            if (node.id === "StartQ") {
+            } else if (node.id === "EndQ") {
+            }
+            return { ...node, data: { ...node.data, count: 0 } };
+          }
+        })
+      );
+
+    
 
     const simulationDto = {numberOfProducts : numberOfProducts , machineDtos:machines,assemblyLineDtos:queues}
     console.log(edges)
@@ -32,11 +44,11 @@ async function HandleSimulate(nodes,edges,numberOfProducts){
         try{
             const response = await axios.post(`http://localhost:8080/simulate`,simulationDto);
             if(response.status === 200){
-                console.log("done")
+                console.log("done");
             }
 
         }catch(error){
-            console.log(error.response.data)
+            alert(error.response.data);
         }  
     
 }
