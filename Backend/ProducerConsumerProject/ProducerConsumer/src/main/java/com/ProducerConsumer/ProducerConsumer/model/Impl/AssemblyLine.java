@@ -83,6 +83,10 @@ public class AssemblyLine implements Subject, Cloneable {
 
             // Notify all observers (observers should update their state)
         }
+        if(!id.equals( "StartQ")) {
+            Thread.sleep(1500);
+        }
+
         notifyAllObservers();
 
 

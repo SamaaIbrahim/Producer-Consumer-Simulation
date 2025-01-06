@@ -56,14 +56,38 @@ public class SimulationOriginator {
     public void loadFromCareTaker() {
         try{
             Memento memento = careTaker.getMemento();
-            this.machines = memento.getMachines();
-            this.assemblyLines = memento.getAssemblyLines();
+
+
+            Map<String, AssemblyLine> newAssemblyLines = new HashMap<>();
+            Map<String, Machine> newMachines = new HashMap<>();
+            for(Machine machine: memento.machines) {
+                newMachines.put(machine.getId(), machine.clone());
+            }
+            for(AssemblyLine assemblyLine: memento.assemblyLines) {
+                newAssemblyLines.put(assemblyLine.getId(), assemblyLine.clone());
+            }
+            for(AssemblyLine assemblyLine: memento.assemblyLines){
+                AssemblyLine newAssemblyLine = assemblyLine.clone();
+                for(Observer observer : assemblyLine.getObservers()) {
+                    Machine machine = newMachines.get(observer.getId());
+                    newAssemblyLine.addObserver(machine);
+                    machine.addSubject(newAssemblyLine);
+                }
+                newAssemblyLines.put(newAssemblyLine.getId(), newAssemblyLine);
+            }
+            for(Machine machine : memento.machines){
+                Machine machine1 = newMachines.get(machine.getId());
+                machine1.setOutQueue(newAssemblyLines.get(machine.getOutQueue().getId()));
+            }
+            this.machines = new ArrayList<>(newMachines.values());
+            this.assemblyLines = new ArrayList<>(newAssemblyLines.values());
             this.products = memento.getProducts();
-            System.out.println("samaasamaasamaasamaasamaasamaasamaasamaasamaasamaasamaasamaasamaa");
-            System.out.println(this.machines);
-            System.out.println(this.assemblyLines);
-            System.out.println(this.products);
-            System.out.println("samaasamaasamaasamaasamaasamaasamaasamaasamaasamaasamaasamaasamaa");
+            this.rate = memento.rate;
+//            System.out.println("samaasamaasamaasamaasamaasamaasamaasamaasamaasamaasamaasamaasamaa");
+//            System.out.println(this.machines);
+//            System.out.println(this.assemblyLines);
+//            System.out.println(this.products);
+//            System.out.println("samaasamaasamaasamaasamaasamaasamaasamaasamaasamaasamaasamaasamaa");
         } catch (EmptyStackException e) {
             System.out.println(e.getMessage());
         }

@@ -199,6 +199,8 @@ public class SimulationService implements ISimulationService {
         AssemblyLine finalEndAssemblyLine = endAssemblyLine;
         Thread finishThread = new Thread(() -> {
             try {
+                System.out.println("stopped"  + stopped);
+
                 while (!stopped) {
                     synchronized (finalEndAssemblyLine) {
                         System.out.println(" check");
@@ -223,6 +225,7 @@ public class SimulationService implements ISimulationService {
     public void simulate(SimulationDto simulationDto) throws IllegalArgumentException {
         if(simulationDto.getNumberOfProducts() <= 0) return;
         stop();
+        stopped= false;
         generateSimulationGenerator(simulationDto);
         simulateThread();
     }
@@ -232,6 +235,7 @@ public class SimulationService implements ISimulationService {
     public void replay() {
 //        simulationOriginator.stopSimulate();
         stop();
+        stopped = false;
         simulationOriginator.loadFromCareTaker();
         this.simulateThread();
     }

@@ -8,17 +8,14 @@ import java.util.Stack;
 
 @Component
 public class CareTaker {
-    Stack<Memento> mementos;
+    private Memento memento;
 
-    public CareTaker() {
-        this.mementos = new Stack<>();
-    }
 
     public void addMemento(Memento memento) {
-        mementos.push(memento);
+        this.memento = memento;
     }
 
     public Memento getMemento() throws EmptyStackException {
-        return mementos.pop();
+        return memento.clone();
     }
 }
