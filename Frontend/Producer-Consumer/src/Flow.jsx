@@ -75,13 +75,13 @@ const SimulationFlow = () => {
                 edge.source === data.from && edge.target === data.to
                   ? {
                       ...edge,
-                      markerEnd: { ...edge.markerEnd, color: "rgba(28, 224, 175, 0.9)" },
-                      style: { ...edge.style, stroke: "rgba(28, 224, 175, 0.9)" }
+                      markerEnd: { ...edge.markerEnd, color: "#808080" },
+                      style: { ...edge.style, stroke: "#808080" }
                     }
                   : edge
               )
             );
-          }, 1000); // 1000 ms = 1 second
+          }, 1500); // 1000 ms = 1 second
         });
         
         client.subscribe(`/Simulate/queue`, (message) => {
@@ -148,13 +148,13 @@ const SimulationFlow = () => {
     const animatedEdge = {
       ...params,
       style: {
-        stroke: "rgba(28, 224, 175, 0.9)",
+        stroke: "#808080",
         strokeWidth: 2,
         strokeDasharray: "10 5", // Dashed pattern
         strokeDashoffset: 0,    // Initial offset
         animation: "dash-move 5s linear infinite", // Apply animation
       },
-      markerEnd: { type: "arrowclosed", color: "rgba(28, 224, 175, 0.9)" },
+      markerEnd: { type: "arrowclosed", color: "#808080" },
     };
       setEdges((eds) => addEdge(animatedEdge, eds));
     
