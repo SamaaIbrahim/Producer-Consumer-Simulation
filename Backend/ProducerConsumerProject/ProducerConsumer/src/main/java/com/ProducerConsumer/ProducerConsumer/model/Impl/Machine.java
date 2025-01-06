@@ -93,7 +93,6 @@ public class Machine implements Runnable, Observer, Cloneable{
                                 // send Queue to Machine
                                 messagingTemplate.convertAndSend("/Simulate/transfer", transferDto);
 
-                                Thread.sleep(1000);
                                 this.socketDto = SocketDto.builder()
                                         .id(this.id)
                                         .color(product.getColor())
@@ -101,6 +100,8 @@ public class Machine implements Runnable, Observer, Cloneable{
                                 System.out.println("_______________________________________________________________________________");
                                 System.out.println("machine process start: " + this);
                                 System.out.println("_______________________________________________________________________________");
+                                Thread.sleep(1000);
+
                                 messagingTemplate.convertAndSend("/Simulate/machine", socketDto);
 
                             }

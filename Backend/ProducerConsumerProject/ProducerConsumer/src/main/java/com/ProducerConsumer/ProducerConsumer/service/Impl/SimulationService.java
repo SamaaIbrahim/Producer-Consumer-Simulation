@@ -172,7 +172,7 @@ public class SimulationService implements ISimulationService {
                 endAssemblyLine = assemblyLine;
             }
         }
-        
+
         simulationOriginator.simulate();
         long rate = simulationOriginator.getRate();
         System.out.println("Product input Rate: " + rate);
