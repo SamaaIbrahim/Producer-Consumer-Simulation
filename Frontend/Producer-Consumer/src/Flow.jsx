@@ -116,7 +116,7 @@ const SimulationFlow = () => {
     setEdges([]);
     setMachineId(1);
     setQueueId(1); 
-    Simulate;
+    Simulate();
   };
 
   const handleNumberOfProductsChange = (e) => {
