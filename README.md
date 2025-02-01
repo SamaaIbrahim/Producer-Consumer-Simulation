@@ -1,7 +1,8 @@
 # Producer-Consumer Simulation
 
+## Demo Video
 
-[Demo Video](https://drive.google.com/file/d/1wF6-tbwQ6jbp9eKXrqbccVvImaZwmICK/view?usp=sharing)
+[![Watch the video](https://img.youtube.com/vi/g2ukbnVgsjQ/0.jpg)](https://www.youtube.com/watch?v=g2ukbnVgsjQ)
 ---
 
 ## Project Overview
