@@ -2,7 +2,7 @@
 
 ## Demo Video
 
-[![Watch the video](https://img.youtube.com/vi/g2ukbnVgsjQ/0.jpg)](https://www.youtube.com/watch?v=g2ukbnVgsjQ)
+[![Watch the video](https://img.youtube.com/vi/g2ukbnVgsjQ/maxresdefault.jpg)](https://www.youtube.com/watch?v=g2ukbnVgsjQ)
 ---
 
 ## Project Overview
